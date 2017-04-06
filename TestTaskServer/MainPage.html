@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <script src="Resources/jquery-3.2.0.js"></script>
+    <script type="text/javascript">
+        function TestLotteryDraw() {
+            var userFlag = $("#userSelect option:selected").val();
+            $.ajax({
+                dataType:"json",
+                type: "POST",
+                url: "http://localhost:8360/LotteryDraw",
+                data: "Operation=LotteryDraw&UserFlag=" + userFlag,
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                },
+                success: function (data) {
+                    $("#mainDiv").html(data.Msg);
+                }
+            });
+        }
+
+        function GetCharts() {
+            var userFlag = $("#userSelect option:selected").val();
+            $.ajax({
+                dataType: "json",
+                type: "POST",
+                url: "http://localhost:8360/LotteryDraw",
+                data: "Operation=GetCharts&UserFlag=" + userFlag,
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                },
+                success: function (data) {
+                    $("#pointDiv").html("当前用户积分："+data.Msg);
+                    var jsonData = eval('(' + data.Data + ')');
+                    var chartDivContent = "";
+                    for (var i = 0; i < jsonData.length; i++) {
+                        chartDivContent += jsonData[i].UserName + "   " + jsonData[i].Points + "<br\>";
+                    }
+                    
+                    $("#chartDiv").html(chartDivContent);
+                }
+            });
+        }
+    </script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+</head>
+<body>
+    <select id="userSelect">
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd503b1">user1</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd503b2">user2</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd503b3">user3</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd503b4">user4</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd503b5">user5</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd503b6">user6</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd503b7">user7</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd503b8">user8</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd503b9">user9</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50310">user10</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50311">user11</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50312">user12</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50313">user13</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50314">user14</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50315">user15</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50316">user16</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50317">user17</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50318">user18</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50319">user19</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50320">user20</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50321">user21</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50322">user22</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50323">user23</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50324">user24</option>
+        <option value="f2b61d0b0e5b4a7ca3a6761d9cd50325">user25</option>
+    </select>
+    <input type="button" value="抽奖" onclick="TestLotteryDraw()" />
+    <div id="mainDiv"></div>
+
+    <input type="button" value="获取排行榜" onclick="GetCharts()" />
+    <div id="pointDiv"></div>
+    <div id="chartDiv"></div>
+</body>
+</html>
