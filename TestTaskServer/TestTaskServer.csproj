@@ -80,7 +80,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\CommonConst.cs" />
-    <Compile Include="Common\CommonEnum.cs" />
     <Compile Include="DAL\MySqlHelper.cs" />
     <Compile Include="DAL\UserInfoDal.cs" />
     <Compile Include="Handler\LotteryDrawHandler.cs" />
@@ -88,9 +87,7 @@
     <Compile Include="Msg\HandlerMsg.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

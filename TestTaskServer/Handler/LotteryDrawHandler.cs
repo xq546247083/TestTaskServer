@@ -34,6 +34,7 @@ namespace TestTaskServer
             string userFlagStr = context.Request.Form["UserFlag"];
             try
             {
+                //获取操作方法
                 MethodInfo methodInfo = this.GetType().GetMethod(operationStr);
                 if (string.IsNullOrEmpty(userFlagStr))
                 {
@@ -60,6 +61,7 @@ namespace TestTaskServer
         {
             try
             {
+                //用户抽奖
                 UserInfoDal.Instance.LotteryDraw(userFlag);
                 WriteResponseMsg(true, CommonConst.LotteryDrawSuccess);
             }
@@ -77,6 +79,7 @@ namespace TestTaskServer
         {
             try
             {
+                //用户获取排行榜
                 DataTable chartTable=UserInfoDal.Instance.GetCharts(ref userFlag);
                 WriteResponseMsg(true, userFlag, chartTable);
             }
@@ -87,10 +90,11 @@ namespace TestTaskServer
         }
 
         /// <summary>
-        /// 写返回消息
+        /// 向Http请求回写数据
         /// </summary>
-        /// <param name="flag"></param>
-        /// <param name="msg"></param>
+        /// <param name="flag">是否成功的标志</param>
+        /// <param name="msg">返回的消息</param>
+        /// <param name="dataTable">返回的数据</param>
         private void WriteResponseMsg(bool flag,string msg,DataTable dataTable=null)
         {
             BaseMsg baseMsg = new BaseMsg(flag.ToString(), msg, dataTable);

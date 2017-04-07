@@ -22,13 +22,11 @@ namespace TestTaskServer
         /// <returns>执行命令所影响的行数</returns>
         public static int ExecuteNonQuery(CommandType cmdType, string cmdText, params MySqlParameter[] commandParameters)
         {
-
             MySqlCommand cmd = new MySqlCommand();
 
             using (MySqlConnection conn = new MySqlConnection(Conn))
             {
                 PrepareCommand(cmd, conn, cmdType, cmdText, commandParameters);
-
                 try
                 {
                     int val = cmd.ExecuteNonQuery();
@@ -44,7 +42,7 @@ namespace TestTaskServer
 
         
         /// <summary>
-        ///使用现有的SQL事务执行多个sql命令
+        ///使用事务执行多个sql命令，且读取数据限制
         /// </summary>
         /// <param name="cmdTextArray">sql命令语句集合</param>
         /// <returns>执行命令所影响的行数</returns>
@@ -58,6 +56,7 @@ namespace TestTaskServer
                 if (conn.State != ConnectionState.Open)
                     conn.Open();
 
+                //设置命令
                 foreach (string cmdText in cmdTextArray)
                 {
                     cmd.CommandText += cmdText + " ";
@@ -85,7 +84,7 @@ namespace TestTaskServer
         }
 
         /// <summary>
-        /// 返回DataSet
+        /// 获取数据
         /// </summary>
         /// <param name="cmdType">命令类型(存储过程, 文本, 等等)</param>
         /// <param name="cmdText">存储过程名称或者sql命令语句</param>
@@ -97,8 +96,6 @@ namespace TestTaskServer
             MySqlCommand cmd = new MySqlCommand();
             //创建一个MySqlConnection对象
             MySqlConnection conn = new MySqlConnection(Conn);
-
-            //在这里我们用一个try/catch结构执行sql文本命令/存储过程，因为如果这个方法产生一个异常我们要关闭连接，因为没有读取器存在，
 
             try
             {
@@ -125,20 +122,16 @@ namespace TestTaskServer
         /// 准备执行一个命令
         /// </summary>
         /// <param name="cmd">sql命令</param>
-        /// <param name="conn">OleDb连接</param>
-        /// <param name="trans">OleDb事务</param>
         /// <param name="cmdType">命令类型例如 存储过程或者文本</param>
         /// <param name="cmdText">命令文本,例如:Select * from Products</param>
         /// <param name="cmdParms">执行命令的参数</param>
         private static void PrepareCommand(MySqlCommand cmd, MySqlConnection conn, CommandType cmdType, string cmdText, MySqlParameter[] cmdParms)
         {
-
             if (conn.State != ConnectionState.Open)
                 conn.Open();
 
             cmd.Connection = conn;
             cmd.CommandText = cmdText;
-
             cmd.CommandType = cmdType;
 
             if (cmdParms != null)

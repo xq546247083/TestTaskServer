@@ -25,8 +25,8 @@ namespace TestTaskServer
             }
         }
         
-        //获取排行榜互斥
-        private static object lockObj = new object();
+        //获取排行榜的互斥锁
+        private static readonly object lockObj = new object();
 
         //抽奖配置表
         private DataSet lotteryDrawConfigDS=null;
@@ -130,14 +130,17 @@ namespace TestTaskServer
         /// <returns></returns>
         public DataTable GetCharts(ref string userFlag)
         {
-            string userPoints = "0";
             //查询积分
             DataSet lotteryDrawDS = MySqlHelper.GetDataSet(CommandType.Text, "SELECT * FROM lotterydraw WHERE UserFlag='" + userFlag + "'");
             if (lotteryDrawDS != null & lotteryDrawDS.Tables.Count > 0 && lotteryDrawDS.Tables[0].Rows.Count > 0)
             {
-                userPoints = lotteryDrawDS.Tables[0].Rows[0]["Points"].ToString();
+                userFlag = lotteryDrawDS.Tables[0].Rows[0]["Points"].ToString();
             }
-            userFlag = userPoints;
+            else
+            {
+                userFlag="0";
+            }
+
             GetCharts(0);
             return lotteryDrawChartsDT;
         }
