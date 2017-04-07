@@ -4,6 +4,7 @@ using System.Data;
 namespace TestTaskServer
 {
     using MySql.Data.MySqlClient;
+    using System.Collections.Generic;
 
     /// <summary>
     ///操作数据库类
@@ -111,6 +112,41 @@ namespace TestTaskServer
                 cmd.Parameters.Clear();
                 conn.Close();
                 return ds;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        /// <summary>
+        /// 获取数据
+        /// </summary>
+        /// <param name="cmdType">命令类型(存储过程, 文本, 等等)</param>
+        /// <param name="cmdText">存储过程名称或者sql命令语句</param>
+        /// <param name="commandParameters">执行命令所用参数的集合</param>
+        /// <returns></returns>
+        public static List<T> GetDataList<T>(CommandType cmdType, string cmdText, params MySqlParameter[] commandParameters) where T : new()
+        {
+            //创建一个MySqlCommand对象
+            MySqlCommand cmd = new MySqlCommand();
+            //创建一个MySqlConnection对象
+            MySqlConnection conn = new MySqlConnection(Conn);
+
+            try
+            {
+                //调用 PrepareCommand 方法，对 MySqlCommand 对象设置参数
+                PrepareCommand(cmd, conn, cmdType, cmdText, commandParameters);
+                //调用 MySqlCommand  的 ExecuteReader 方法
+                MySqlDataAdapter adapter = new MySqlDataAdapter();
+                adapter.SelectCommand = cmd;
+                DataSet ds = new DataSet();
+
+                adapter.Fill(ds);
+                //清除参数
+                cmd.Parameters.Clear();
+                conn.Close();
+                return ModelHandler<T>.FillModel(ds); 
             }
             catch (Exception e)
             {

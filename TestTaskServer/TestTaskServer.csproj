@@ -83,6 +83,10 @@
     <Compile Include="DAL\MySqlHelper.cs" />
     <Compile Include="DAL\UserInfoDal.cs" />
     <Compile Include="Handler\LotteryDrawHandler.cs" />
+    <Compile Include="Model\ModelHandler.cs" />
+    <Compile Include="Model\LotteryDrawConfigModel.cs" />
+    <Compile Include="Model\LotteryDrawModel.cs" />
+    <Compile Include="Model\UserInfoModel.cs" />
     <Compile Include="Msg\BaseMsg.cs" />
     <Compile Include="Msg\HandlerMsg.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

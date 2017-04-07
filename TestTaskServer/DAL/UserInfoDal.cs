@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 
@@ -32,7 +33,7 @@ namespace TestTaskServer
         private static readonly object lockObj = new object();
 
         //抽奖配置表
-        private DataSet lotteryDrawConfigDS=null;
+        private List<LotteryDrawConfigModel> lotteryDrawConfigDS=null;
 
         //排行榜
         private DataTable lotteryDrawChartsDT = null;
@@ -62,20 +63,20 @@ namespace TestTaskServer
             {
                 int currenUserPoints = -1;
                 //检测是否在抽奖时间范围内
-                if (lotteryDrawConfigDS == null || lotteryDrawConfigDS.Tables.Count == 0 || lotteryDrawConfigDS.Tables[0].Rows.Count == 0)
+                if (lotteryDrawConfigDS == null || lotteryDrawConfigDS.Count == 0 )
                 {
-                    lotteryDrawConfigDS = MySqlHelper.GetDataSet(CommandType.Text, "SELECT * FROM LotterydrawConfig");
+                    lotteryDrawConfigDS = MySqlHelper.GetDataList<LotteryDrawConfigModel>(CommandType.Text, "SELECT * FROM LotterydrawConfig");
                 }
 
-                if (lotteryDrawConfigDS != null & lotteryDrawConfigDS.Tables.Count > 0 && lotteryDrawConfigDS.Tables[0].Rows.Count > 0)
+                if (lotteryDrawConfigDS != null & lotteryDrawConfigDS.Count > 0)
                 {
                     //如果开始时间大于当前时间，这提示活动未开始
-                    if (DateTime.Parse(lotteryDrawConfigDS.Tables[0].Rows[0]["BeginTime"].ToString())>DateTime.Now)
+                    if (lotteryDrawConfigDS[0].BeginTime> DateTime.Now)
                     {
                         throw new Exception(CommonConst.NotBeginActivity);
                     }
                     //如果结束时间小于当前时间，这提示活动已结局
-                    else if (DateTime.Parse(lotteryDrawConfigDS.Tables[0].Rows[0]["EndTime"].ToString()) < DateTime.Now)
+                    else if (lotteryDrawConfigDS[0].EndTime < DateTime.Now)
                     {
                         throw new Exception(CommonConst.ShutDownActivity);
                     }
@@ -88,11 +89,11 @@ namespace TestTaskServer
                 //用户名
                 string userName = "";
                 //检测当前用户标志位是否正确或者宝石是否足够
-                DataSet userInfoDS = MySqlHelper.GetDataSet(CommandType.Text, "SELECT * FROM userinfo WHERE UserFlag='" + userFlag + "'");
-                if (userInfoDS != null & userInfoDS.Tables.Count > 0 && userInfoDS.Tables[0].Rows.Count > 0)
+                List<UserInfoModel> userInfoDS = MySqlHelper.GetDataList<UserInfoModel>(CommandType.Text, "SELECT * FROM userinfo WHERE UserFlag='" + userFlag + "'");
+                if (userInfoDS != null & userInfoDS.Count > 0)
                 {
-                    userName = userInfoDS.Tables[0].Rows[0]["UserName"].ToString();
-                    if(int.Parse(userInfoDS.Tables[0].Rows[0]["DiamondNumber"].ToString())<100)
+                    userName = userInfoDS[0].UserName;
+                    if (userInfoDS[0].DiamondNumber < 100)
                         throw new Exception(CommonConst.NoEnoughDiamond);
                 }
                 else
@@ -101,15 +102,15 @@ namespace TestTaskServer
                 }
 
                 //查询是否存在抽奖关联数据，不存在则插入数据
-                DataSet lotteryDrawDS = MySqlHelper.GetDataSet(CommandType.Text, "SELECT * FROM lotterydraw WHERE UserFlag='" + userFlag + "'");
-                if (!(lotteryDrawDS != null & lotteryDrawDS.Tables.Count > 0 && lotteryDrawDS.Tables[0].Rows.Count > 0))
+                List<LotteryDrawModel> lotteryDrawDS = MySqlHelper.GetDataList<LotteryDrawModel>(CommandType.Text, "SELECT * FROM lotterydraw WHERE UserFlag='" + userFlag + "'");
+                if (!(lotteryDrawDS != null & lotteryDrawDS.Count > 0))
                 {
                     MySqlHelper.ExecuteNonQuery(CommandType.Text, "INSERT INTO lotterydraw (userName,userflag) VALUES ('" + userName + "','" + userFlag + "')");
                     currenUserPoints=0;
                 }
                 else
                 {
-                    currenUserPoints = int.Parse(lotteryDrawDS.Tables[0].Rows[0]["Points"].ToString());
+                    currenUserPoints = lotteryDrawDS[0].Points;
                 }
 
                 //事务更新宝石数量和积分
@@ -134,10 +135,10 @@ namespace TestTaskServer
         public DataTable GetCharts(ref string userFlag)
         {
             //查询积分
-            DataSet lotteryDrawDS = MySqlHelper.GetDataSet(CommandType.Text, "SELECT * FROM lotterydraw WHERE UserFlag='" + userFlag + "'");
-            if (lotteryDrawDS != null & lotteryDrawDS.Tables.Count > 0 && lotteryDrawDS.Tables[0].Rows.Count > 0)
+            List<LotteryDrawModel> lotteryDrawDS = MySqlHelper.GetDataList<LotteryDrawModel>(CommandType.Text, "SELECT * FROM lotterydraw WHERE UserFlag='" + userFlag + "'");
+            if (lotteryDrawDS != null & lotteryDrawDS.Count > 0 )
             {
-                userFlag = lotteryDrawDS.Tables[0].Rows[0]["Points"].ToString();
+                userFlag = lotteryDrawDS[0].Points.ToString();
             }
             else
             {
