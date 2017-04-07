@@ -4,6 +4,9 @@ using System.Threading;
 
 namespace TestTaskServer
 {
+    /// <summary>
+    /// 用户操作类
+    /// </summary>
     public class UserInfoDal
     {
         //单例

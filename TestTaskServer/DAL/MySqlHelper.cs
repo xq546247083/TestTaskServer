@@ -6,7 +6,7 @@ namespace TestTaskServer
     using MySql.Data.MySqlClient;
 
     /// <summary>
-    ///MYSQLHelper 的摘要说明
+    ///操作数据库类
     /// </summary>
     public abstract class MySqlHelper
     {

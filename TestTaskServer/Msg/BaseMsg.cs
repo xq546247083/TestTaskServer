@@ -5,6 +5,9 @@ using System.Text;
 
 namespace TestTaskServer
 {
+    /// <summary>
+    /// 消息类
+    /// </summary>
     [Serializable]
     [DataContractAttribute]
     public class BaseMsg
@@ -27,8 +30,14 @@ namespace TestTaskServer
         [DataMember(Order = 0)]
         public String Flag
         {
-            get { return _flag; }
-            set { _flag = value; }
+            get 
+            { 
+                return _flag; 
+            }
+            set 
+            { 
+                _flag = value;
+            }
         }
 
         /// <summary>
@@ -37,8 +46,14 @@ namespace TestTaskServer
         [DataMember(Order = 1)]
         public String Msg
         {
-            get { return _msg; }
-            set { _msg = value; }
+            get 
+            {
+                return _msg;
+            }
+            set 
+            {
+                _msg = value;
+            }
         }
 
         /// <summary>
@@ -86,8 +101,14 @@ namespace TestTaskServer
         /// </summary>
         public DataTable DataTable
         {
-            get { return _dataTable; }
-            set { _dataTable = value; }
+            get 
+            {
+                return _dataTable; 
+            }
+            set 
+            { 
+                _dataTable = value; 
+            }
         }
     }
 }

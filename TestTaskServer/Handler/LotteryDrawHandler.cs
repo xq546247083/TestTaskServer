@@ -5,10 +5,11 @@ using System.Web;
 
 namespace TestTaskServer
 {
-
+    /// <summary>
+    /// 处理抽奖以及获取排行榜类
+    /// </summary>
     public class LotteryDrawHandler : IHttpHandler
     {
-
         #region method
 
         public bool IsReusable
@@ -19,7 +20,6 @@ namespace TestTaskServer
             {
                 return true; 
             }
-
         }
 
         /// <summary>
@@ -50,7 +50,6 @@ namespace TestTaskServer
             {
                 WriteResponseMsg(false, CommonConst.NoFindMethod);
             }
-            
         }
 
         /// <summary>
@@ -102,6 +101,7 @@ namespace TestTaskServer
             HttpContext.Current.Response.Write(HandlerMsg.ToJson<BaseMsg>(baseMsg));
             HttpContext.Current.ApplicationInstance.CompleteRequest();   
         }
+
         #endregion
     }
 }

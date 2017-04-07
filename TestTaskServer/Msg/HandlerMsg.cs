@@ -4,6 +4,9 @@ using System.Text;
 
 namespace TestTaskServer
 {
+    /// <summary>
+    /// 处理消息类
+    /// </summary>
     public class HandlerMsg
     {
 
