@@ -16,9 +16,9 @@ namespace TestTaskServer
         {
             // 如果无法为其他请求重用托管处理程序，则返回 false。
             // 如果按请求保留某些状态信息，则通常这将为 false。
-            get 
+            get
             {
-                return true; 
+                return true;
             }
         }
 
@@ -42,11 +42,10 @@ namespace TestTaskServer
                 }
                 else
                 {
-                    methodInfo.Invoke(this, new string[]{ userFlagStr });
+                    methodInfo.Invoke(this, new string[] { userFlagStr });
                 }
-                
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 WriteResponseMsg(false, CommonConst.NoFindMethod);
             }
@@ -60,11 +59,11 @@ namespace TestTaskServer
         {
             try
             {
-                //用户抽奖
+                // 用户抽奖
                 UserInfoDal.Instance.LotteryDraw(userFlag);
                 WriteResponseMsg(true, CommonConst.LotteryDrawSuccess);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 WriteResponseMsg(false, ex.Message);
             }
@@ -78,8 +77,8 @@ namespace TestTaskServer
         {
             try
             {
-                //用户获取排行榜
-                DataTable chartTable=UserInfoDal.Instance.GetCharts(ref userFlag);
+                // 用户获取排行榜
+                DataTable chartTable = UserInfoDal.Instance.GetCharts(ref userFlag);
                 WriteResponseMsg(true, userFlag, chartTable);
             }
             catch (Exception)
@@ -94,12 +93,12 @@ namespace TestTaskServer
         /// <param name="flag">是否成功的标志</param>
         /// <param name="msg">返回的消息</param>
         /// <param name="dataTable">返回的数据</param>
-        private void WriteResponseMsg(bool flag,string msg,DataTable dataTable=null)
+        private void WriteResponseMsg(bool flag, string msg, DataTable dataTable = null)
         {
             BaseMsg baseMsg = new BaseMsg(flag.ToString(), msg, dataTable);
             var sd = HandlerMsg.ToJson<BaseMsg>(baseMsg);
             HttpContext.Current.Response.Write(HandlerMsg.ToJson<BaseMsg>(baseMsg));
-            HttpContext.Current.ApplicationInstance.CompleteRequest();   
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
         }
 
         #endregion

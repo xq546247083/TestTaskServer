@@ -1,18 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 
 namespace TestTaskServer
 {
     using MySql.Data.MySqlClient;
-    using System.Collections.Generic;
 
     /// <summary>
     ///操作数据库类
     /// </summary>
     public abstract class MySqlHelper
     {
-        //数据库连接字符串
-        public static string Conn = System.Configuration.ConfigurationManager.AppSettings["ConnStr"];
+        /// <summary>
+        /// 数据库连接字符串
+        /// </summary>
+        public static string Conn = ConfigurationManager.AppSettings["ConnStr"];
 
         /// <summary>
         ///  给数据库用假设参数执行一个sql命令（不返回数据集）
@@ -32,6 +35,7 @@ namespace TestTaskServer
                 {
                     int val = cmd.ExecuteNonQuery();
                     cmd.Parameters.Clear();
+
                     return val;
                 }
                 catch (Exception ex)
@@ -62,6 +66,7 @@ namespace TestTaskServer
                 {
                     cmd.CommandText += cmdText + " ";
                 }
+
                 try
                 {
                     sqlTransaction = conn.BeginTransaction(IsolationLevel.ReadCommitted);

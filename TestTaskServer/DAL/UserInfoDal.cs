@@ -28,19 +28,19 @@ namespace TestTaskServer
                 return _instance;
             }
         }
-        
+
         //获取排行榜的互斥锁
         private static readonly object lockObj = new object();
 
         //抽奖配置表
-        private List<LotteryDrawConfigModel> lotteryDrawConfigDS=null;
+        private List<LotteryDrawConfigModel> lotteryDrawConfigDS = null;
 
         //排行榜
         private DataTable lotteryDrawChartsDT = null;
         //排行榜最低分
-        private int lowestPoints 
+        private int lowestPoints
         {
-            get 
+            get
             {
                 if (lotteryDrawChartsDT != null && lotteryDrawChartsDT.Rows.Count > 0)
                 {
@@ -61,23 +61,23 @@ namespace TestTaskServer
         {
             try
             {
-                int currenUserPoints = -1;
                 //检测是否在抽奖时间范围内
-                if (lotteryDrawConfigDS == null || lotteryDrawConfigDS.Count == 0 )
+                if (lotteryDrawConfigDS == null || lotteryDrawConfigDS.Count == 0)
                 {
                     lotteryDrawConfigDS = MySqlHelper.GetDataList<LotteryDrawConfigModel>(CommandType.Text, "SELECT * FROM LotterydrawConfig");
                 }
 
                 if (lotteryDrawConfigDS != null & lotteryDrawConfigDS.Count > 0)
                 {
-                    //如果开始时间大于当前时间，这提示活动未开始
-                    if (lotteryDrawConfigDS[0].BeginTime> DateTime.Now)
+                    // 判断活动时间
+                    if (lotteryDrawConfigDS[0].BeginTime > DateTime.Now)
                     {
+                        //如果开始时间大于当前时间，这提示活动未开始
                         throw new Exception(CommonConst.NotBeginActivity);
                     }
-                    //如果结束时间小于当前时间，这提示活动已结局
                     else if (lotteryDrawConfigDS[0].EndTime < DateTime.Now)
                     {
+                        //如果结束时间小于当前时间，这提示活动已结局
                         throw new Exception(CommonConst.ShutDownActivity);
                     }
                 }
@@ -102,11 +102,12 @@ namespace TestTaskServer
                 }
 
                 //查询是否存在抽奖关联数据，不存在则插入数据
+                int currenUserPoints = -1;
                 List<LotteryDrawModel> lotteryDrawDS = MySqlHelper.GetDataList<LotteryDrawModel>(CommandType.Text, "SELECT * FROM lotterydraw WHERE UserFlag='" + userFlag + "'");
                 if (!(lotteryDrawDS != null & lotteryDrawDS.Count > 0))
                 {
                     MySqlHelper.ExecuteNonQuery(CommandType.Text, "INSERT INTO lotterydraw (userName,userflag) VALUES ('" + userName + "','" + userFlag + "')");
-                    currenUserPoints=0;
+                    currenUserPoints = 0;
                 }
                 else
                 {
@@ -115,7 +116,7 @@ namespace TestTaskServer
 
                 //事务更新宝石数量和积分
                 string updateDiamondNumberStr = "UPDATE userinfo SET DiamondNumber=DiamondNumber-100 WHERE UserFlag='" + userFlag + "';";
-                string lotteryDrawPointStr = "UPDATE lotterydraw SET POINTS=POINTS+10 WHERE UserFlag='" + userFlag + "';" ;
+                string lotteryDrawPointStr = "UPDATE lotterydraw SET POINTS=POINTS+10 WHERE UserFlag='" + userFlag + "';";
                 MySqlHelper.ExecuteTranNonQuery(updateDiamondNumberStr, lotteryDrawPointStr);
 
                 //异步更新排行榜
@@ -136,13 +137,13 @@ namespace TestTaskServer
         {
             //查询积分
             List<LotteryDrawModel> lotteryDrawDS = MySqlHelper.GetDataList<LotteryDrawModel>(CommandType.Text, "SELECT * FROM lotterydraw WHERE UserFlag='" + userFlag + "'");
-            if (lotteryDrawDS != null & lotteryDrawDS.Count > 0 )
+            if (lotteryDrawDS != null & lotteryDrawDS.Count > 0)
             {
                 userFlag = lotteryDrawDS[0].Points.ToString();
             }
             else
             {
-                userFlag="0";
+                userFlag = "0";
             }
 
             GetCharts(0);
@@ -153,19 +154,19 @@ namespace TestTaskServer
         /// 更新排行榜数据
         /// </summary>
         /// <returns></returns>
-        private void GetCharts(int flag, int currenUserPoints=0)
+        private void GetCharts(int flag, int currenUserPoints = 0)
         {
             lock (lockObj)
             {
                 //如果操作为查询排行榜且排行榜为空 或者 如果排行榜人数未满20人或者排行榜最低分小于了当前的分数，则更新排行榜
-                if ((lotteryDrawChartsDT == null && flag==0)||
-                    (((lotteryDrawChartsDT != null&&lotteryDrawChartsDT.Rows.Count < 20) || (lowestPoints < currenUserPoints + 10 && lotteryDrawChartsDT != null))&& flag==1))
+                if ((lotteryDrawChartsDT == null && flag == 0) ||
+                    (((lotteryDrawChartsDT != null && lotteryDrawChartsDT.Rows.Count < 20) || (lowestPoints < currenUserPoints + 10 && lotteryDrawChartsDT != null)) && flag == 1))
                 {
                     DataSet lotteryDrawChartsDS = MySqlHelper.GetDataSet(CommandType.Text, "SELECT  * FROM lotterydraw ORDER BY points desc LIMIT 0,20");
                     if (lotteryDrawChartsDS != null & lotteryDrawChartsDS.Tables.Count > 0)
                     {
-                        lotteryDrawChartsDT= lotteryDrawChartsDS.Tables[0];
-                    }   
+                        lotteryDrawChartsDT = lotteryDrawChartsDS.Tables[0];
+                    }
                 }
             }
         }
