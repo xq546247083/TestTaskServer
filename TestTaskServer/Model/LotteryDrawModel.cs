@@ -4,7 +4,7 @@ namespace TestTaskServer
     public class LotteryDrawModel
     {
         /// <summary>
-        /// 序列哈
+        /// 序列号
         /// </summary>
         public int SerialNumber { get; set; }
 

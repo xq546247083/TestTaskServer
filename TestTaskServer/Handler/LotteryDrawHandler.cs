@@ -6,7 +6,7 @@ using System.Web;
 namespace TestTaskServer
 {
     /// <summary>
-    /// 处理抽奖以及获取排行榜类
+    /// 处理抽奖以及获取排行榜
     /// </summary>
     public class LotteryDrawHandler : IHttpHandler
     {
