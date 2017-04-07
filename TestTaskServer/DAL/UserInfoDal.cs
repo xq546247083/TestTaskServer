@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Threading;
 
 namespace TestTaskServer
 {
@@ -23,6 +24,9 @@ namespace TestTaskServer
                 return _instance;
             }
         }
+        
+        //获取排行榜互斥
+        private static object lockObj = new object();
 
         //抽奖配置表
         private DataSet lotteryDrawConfigDS=null;
@@ -110,11 +114,8 @@ namespace TestTaskServer
                 string lotteryDrawPointStr = "UPDATE lotterydraw SET POINTS=POINTS+10 WHERE UserFlag='" + userFlag + "';" ;
                 MySqlHelper.ExecuteTranNonQuery(updateDiamondNumberStr, lotteryDrawPointStr);
 
-                //如果排行榜最低分小于了当前的分数或者排行榜人数未满20人，则更新排行榜
-                if (lotteryDrawChartsDT.Rows.Count<20 || (lowestPoints < currenUserPoints + 10 && lotteryDrawChartsDT != null))
-                {
-                    lotteryDrawChartsDT = GetCharts();
-                }
+                //异步更新排行榜
+                ThreadPool.QueueUserWorkItem((obj) => { GetCharts(1, currenUserPoints); });
             }
             catch
             {
@@ -137,28 +138,29 @@ namespace TestTaskServer
                 userPoints = lotteryDrawDS.Tables[0].Rows[0]["Points"].ToString();
             }
             userFlag = userPoints;
-
-            //查询排行榜
-            if (lotteryDrawChartsDT == null)
-            {
-                lotteryDrawChartsDT = GetCharts();
-            }
-
+            GetCharts(0);
             return lotteryDrawChartsDT;
         }
 
         /// <summary>
-        /// 获取排行榜数据
+        /// 更新排行榜数据
         /// </summary>
         /// <returns></returns>
-        private DataTable GetCharts()
+        private void GetCharts(int flag, int currenUserPoints=0)
         {
-            DataSet lotteryDrawChartsDS = MySqlHelper.GetDataSet(CommandType.Text, "SELECT  * FROM lotterydraw ORDER BY points desc LIMIT 0,20");
-            if (lotteryDrawChartsDS != null & lotteryDrawChartsDS.Tables.Count > 0)
+            lock (lockObj)
             {
-                return lotteryDrawChartsDS.Tables[0];
+                //如果操作为查询排行榜且排行榜为空 或者 如果排行榜人数未满20人或者排行榜最低分小于了当前的分数，则更新排行榜
+                if ((lotteryDrawChartsDT == null && flag==0)||
+                    (((lotteryDrawChartsDT != null&&lotteryDrawChartsDT.Rows.Count < 20) || (lowestPoints < currenUserPoints + 10 && lotteryDrawChartsDT != null))&& flag==1))
+                {
+                    DataSet lotteryDrawChartsDS = MySqlHelper.GetDataSet(CommandType.Text, "SELECT  * FROM lotterydraw ORDER BY points desc LIMIT 0,20");
+                    if (lotteryDrawChartsDS != null & lotteryDrawChartsDS.Tables.Count > 0)
+                    {
+                        lotteryDrawChartsDT= lotteryDrawChartsDS.Tables[0];
+                    }   
+                }
             }
-            else return null;
         }
     }
 }
