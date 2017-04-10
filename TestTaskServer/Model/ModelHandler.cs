@@ -20,14 +20,14 @@ namespace TestTaskServer
         /// <returns>数据集</returns>
         public static List<T> FillModel(DataSet ds)
         {
+            //如果没有数据，返回null，否则返回其第一个表对应的List
             if (ds == null || ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
             {
                 return null;
             }
-            else
-            {
-                return FillModel(ds.Tables[0]);
-            }
+
+            return FillModel(ds.Tables[0]);
+
         }
 
         /// <summary>
@@ -37,17 +37,20 @@ namespace TestTaskServer
         /// <returns>数据集</returns>
         public static List<T> FillModel(DataTable dt)
         {
+            //如果表为空或者没有数据，返回null
             if (dt == null || dt.Rows.Count == 0)
             {
                 return null;
             }
 
+            //将DataTable数据转换为List
             List<T> modelList = new List<T>();
             foreach (DataRow dr in dt.Rows)
             {
                 T model = new T();
-                for (int i = 0; i < dr.Table.Columns.Count; i++)
+                for (Int32 i = 0; i < dr.Table.Columns.Count; i++)
                 {
+                    //把表格的数据设置到List
                     PropertyInfo propertyInfo = model.GetType().GetProperty(dr.Table.Columns[i].ColumnName);
                     if (propertyInfo != null && dr[i] != DBNull.Value)
                         propertyInfo.SetValue(model, dr[i], null);
@@ -71,6 +74,7 @@ namespace TestTaskServer
         /// <returns>返回的DataTable</returns>
         public static DataTable ToDataTable(List<T> items)
         {
+            //创建T类型对应的表格
             var tb = new DataTable(typeof(T).Name);
             PropertyInfo[] props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
@@ -80,11 +84,12 @@ namespace TestTaskServer
                 tb.Columns.Add(prop.Name, t);
             }
 
+            //为表格添加数据
             foreach (T item in items)
             {
                 var values = new object[props.Length];
 
-                for (int i = 0; i < props.Length; i++)
+                for (Int32 i = 0; i < props.Length; i++)
                 {
                     values[i] = props[i].GetValue(item, null);
                 }
@@ -100,7 +105,7 @@ namespace TestTaskServer
         /// </summary>
         /// <param name="t">类型</param>
         /// <returns>返回值</returns>
-        public static bool IsNullable(Type t)
+        public static Boolean IsNullable(Type t)
         {
             return !t.IsValueType || (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>));
         }
@@ -114,19 +119,10 @@ namespace TestTaskServer
         {
             if (type != null && IsNullable(type))
             {
-                if (!type.IsValueType)
-                {
-                    return type;
-                }
-                else
-                {
-                    return Nullable.GetUnderlyingType(type);
-                }
+                return !type.IsValueType ? type : Nullable.GetUnderlyingType(type);
             }
-            else
-            {
-                return type;
-            }
+
+            return type;
         }
 
         #endregion

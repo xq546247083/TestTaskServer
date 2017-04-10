@@ -8,51 +8,43 @@ namespace TestTaskServer
     /// </summary>
     public class UserInfoBll
     {
-        #region　属性
+        #region 属性
 
         /// <summary>
-        /// 用户类实例
+        /// 用户Bll类
         /// </summary>
-        private volatile static UserInfoBll Instance = new UserInfoBll();
+        private static UserInfoBll mInstance = new UserInfoBll();
+
+        /// <summary>
+        /// 用户Bll类的实例
+        /// </summary>
+        public static UserInfoBll Instance
+        {
+            get
+            {
+                return mInstance;
+            }
+        }
 
         #endregion
 
         #region 方法
 
         /// <summary>
-        /// 抽奖操作
-        /// </summary>
-        /// <param name="userFlag">用户标志</param>
-        public void LotteryDraw(string userFlag)
-        {
-            LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig();
-            string userName = CheckUserInfo(userFlag);
-
-            //获取当前用户的最新抽奖时间,以及判断宝石是否足够
-            DateTime lastLotteryDrawTime = LotteryDrawBll.Instance.GetUserLotteryInfo(userFlag, userName);
-
-            //执行抽奖的数据库操作
-            string pointsStr = LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig(lastLotteryDrawTime) ? "POINTS+10 " : "10";
-            UserInfoDal.Instance.UpdateUserInfo(userFlag, lastLotteryDrawTime, pointsStr);
-
-            //更新用户抽奖数据
-            LotteryDrawBll.Instance.UpdateLotteryDrawData(userFlag);
-        }
-
-        /// <summary>
         /// 检测当前用户标志位是否正确或者宝石是否足够,并返回用户名
         /// </summary>
         /// <param name="userFlag">用户标志</param>
         /// <returns>用户名</returns>
-        public string CheckUserInfo(string userFlag)
+        public String CheckUserInfo(String userFlag)
         {
             //用户名
-            string userName = "";
-            List<UserInfoModel> userInfoDS = UserInfoDal.Instance.GetUserInfoData(userFlag);
-            if (userInfoDS != null & userInfoDS.Count > 0)
+            String userName = "";
+
+            List<UserInfoModel> userInfoDs = UserInfoDal.Instance.GetUserInfoData(userFlag);
+            if (userInfoDs != null && userInfoDs.Count > 0)
             {
-                userName = userInfoDS[0].UserName;
-                if (userInfoDS[0].DiamondNumber < 100)
+                userName = userInfoDs[0].UserName;
+                if (userInfoDs[0].DiamondNumber < 100)
                     throw new Exception(CommonConst.NoEnoughDiamond);
             }
             else

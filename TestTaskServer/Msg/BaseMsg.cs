@@ -15,7 +15,7 @@ namespace TestTaskServer
         private String flag;
         private String msg;
         private DataTable dataTable;
-        private string data;
+        private String data;
 
         public BaseMsg(String flag, String msg,DataTable dataTable)
         {
@@ -57,10 +57,10 @@ namespace TestTaskServer
         }
 
         /// <summary>
-        /// 数据
+        /// 转数据为字符串
         /// </summary>
         [DataMember(Order = 2)]
-        public string Data
+        public String Data
         {
             get 
             {
@@ -72,10 +72,10 @@ namespace TestTaskServer
 
                 StringBuilder jsonBuilder = new StringBuilder();
                 jsonBuilder.Append("[");
-                for (int i = 0; i < dataTable.Rows.Count; i++)
+                for (Int32 i = 0; i < dataTable.Rows.Count; i++)
                 {
                     jsonBuilder.Append("{");
-                    for (int j = 0; j < dataTable.Columns.Count; j++)
+                    for (Int32 j = 0; j < dataTable.Columns.Count; j++)
                     {
                         jsonBuilder.Append("'");
                         jsonBuilder.Append(dataTable.Columns[j].ColumnName);
@@ -90,8 +90,9 @@ namespace TestTaskServer
 
                 jsonBuilder.Remove(jsonBuilder.Length - 1, 1);
                 jsonBuilder.Append("]");
+                data=jsonBuilder.ToString();
 
-                return jsonBuilder.ToString();
+                return data;
             }
             set
             {

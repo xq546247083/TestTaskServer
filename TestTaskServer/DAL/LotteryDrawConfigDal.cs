@@ -3,12 +3,26 @@ using System.Data;
 
 namespace TestTaskServer
 {
+    /// <summary>
+    /// 抽奖配置Dal类
+    /// </summary>
     public class LotteryDrawConfigDal
     {
         /// <summary>
         /// 抽奖配置Dal实例
         /// </summary>
-        public volatile static LotteryDrawConfigDal Instance = new LotteryDrawConfigDal();
+        private static LotteryDrawConfigDal mInstance = new LotteryDrawConfigDal();
+
+        /// <summary>
+        /// 抽奖配置信息Dal实例
+        /// </summary>
+        public static LotteryDrawConfigDal Instance
+        {
+            get
+            {
+                return mInstance;
+            }
+        }
 
         /// <summary>
         /// 获取抽奖配置数据

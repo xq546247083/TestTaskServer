@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 using System.Web;
 
 namespace TestTaskServer
@@ -13,7 +12,7 @@ namespace TestTaskServer
     {
         #region 方法
 
-        public bool IsReusable
+        public Boolean IsReusable
         {
             // 如果无法为其他请求重用托管处理程序，则返回 false。
             // 如果按请求保留某些状态信息，则通常这将为 false。
@@ -31,21 +30,19 @@ namespace TestTaskServer
         {
             context.Response.ContentType = "application/json";
 
-            RewardCentreBll.Instance.StartRewardCentre();
-
-            string operationStr = context.Request.Form["Operation"];
-            string userFlagStr = context.Request.Form["UserFlag"];
+            String operationStr = context.Request.Form["Operation"];
+            String userFlagStr = context.Request.Form["UserFlag"];
             try
             {
                 //获取操作方法
                 MethodInfo methodInfo = this.GetType().GetMethod(operationStr);
-                if (string.IsNullOrEmpty(userFlagStr))
+                if (String.IsNullOrEmpty(userFlagStr))
                 {
                     methodInfo.Invoke(this, null);
                 }
                 else
                 {
-                    methodInfo.Invoke(this, new string[] { userFlagStr });
+                    methodInfo.Invoke(this, new String[] { userFlagStr });
                 }
             }
             catch
@@ -58,13 +55,13 @@ namespace TestTaskServer
         /// 抽奖操作
         /// </summary>
         /// <param name="userFlag">用户标志</param>
-        public void LotteryDraw(string userFlag)
+        public void LotteryDraw(String userFlag)
         {
             try
             {
                 // 用户抽奖
-                UserInfoBll userInfoBll = new UserInfoBll();
-                userInfoBll.LotteryDraw(userFlag);
+                LotteryDrawBll lotteryDrawBll = new LotteryDrawBll();
+                lotteryDrawBll.LotteryDraw(userFlag);
 
                 HandlerMsg.WriteResponseMsg(HttpContext.Current, true, CommonConst.LotteryDrawSuccess);
             }
@@ -78,7 +75,7 @@ namespace TestTaskServer
         /// 获取排行榜
         /// </summary>
         /// <param name="userFlag">用户标志</param>
-        public void GetCharts(string userFlag)
+        public void GetCharts(String userFlag)
         {
             try
             {

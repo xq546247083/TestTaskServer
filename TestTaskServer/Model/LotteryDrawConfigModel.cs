@@ -2,6 +2,9 @@
 
 namespace TestTaskServer
 {
+    /// <summary>
+    /// 抽奖配置Model
+    /// </summary>
     public class LotteryDrawConfigModel
     {
         /// <summary>

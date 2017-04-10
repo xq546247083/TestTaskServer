@@ -6,16 +6,27 @@ using System.Threading;
 namespace TestTaskServer
 {
     /// <summary>
-    /// 用户操作类
+    /// 用户抽奖类
     /// </summary>
     public class LotteryDrawBll
     {
         #region 属性
 
         /// <summary>
-        /// 抽奖类实例
+        /// 用户抽奖bll类
         /// </summary>
-        public volatile static LotteryDrawBll Instance = new LotteryDrawBll();
+        private static LotteryDrawBll mInstance = new LotteryDrawBll();
+
+        /// <summary>
+        /// 用户抽奖bll的实例
+        /// </summary>
+        public static LotteryDrawBll Instance
+        {
+            get
+            {
+                return mInstance;
+            }
+        }
 
         /// <summary>
         /// 用户抽奖数据缓存锁
@@ -23,41 +34,44 @@ namespace TestTaskServer
         private ReaderWriterLockSlim lotteryDrawLock = new ReaderWriterLockSlim();
 
         /// <summary>
-        /// LotteryDrawData的字段
+        /// 缓存抽奖数据
         /// </summary>
-        private List<LotteryDrawModel> lotteryDrawData = null;
-
-        /// <summary>
-        /// 抽奖数据信息表,用来暂存用户抽奖信息
-        /// </summary>
-        private List<LotteryDrawModel> LotteryDrawData
-        {
-            get
-            {
-                lotteryDrawLock.EnterReadLock();
-                if (lotteryDrawData == null || lotteryDrawData.Count == 0)
-                {
-                    lotteryDrawData = LotteryDrawDal.Instance.GetLotteryDrawData();
-                }
-
-                lotteryDrawLock.ExitReadLock();
-                return lotteryDrawData;
-            }
-        }
+        private List<LotteryDrawModel> lotteryDrawData = LotteryDrawDal.Instance.GetLotteryDrawData();
 
         #endregion
 
         #region 方法
 
         /// <summary>
+        /// 抽奖操作
+        /// </summary>
+        /// <param name="userFlag">用户标志</param>
+        public void LotteryDraw(String userFlag)
+        {
+            LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig();
+            String userName = UserInfoBll.Instance.CheckUserInfo(userFlag);
+
+            //获取当前用户的最新抽奖时间,以及判断宝石是否足够
+            DateTime lastLotteryDrawTime = GetUserLotteryInfo(userFlag, userName);
+
+            //执行抽奖的数据库操作
+            String pointsStr = LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig(lastLotteryDrawTime) ? "POINTS+10 " : "10";
+            UserInfoDal.Instance.UserLotteryDrwaOperation(userFlag, lastLotteryDrawTime, pointsStr);
+
+            //更新用户抽奖数据
+            UpdateLotteryDrawData(userFlag);
+        }
+
+        /// <summary>
         /// 获取排行榜
         /// </summary>
         /// <param name="userFlag">用户标志</param>
         /// <returns>排行榜数据</returns>
-        public List<LotteryDrawModel> GetCharts(ref string userFlag)
+        public List<LotteryDrawModel> GetCharts(ref String userFlag)
         {
             //获取当前用户分数
             userFlag = GetUserPoints(userFlag).ToString();
+
             return GetLotteryDrawChartsData();
         }
 
@@ -67,25 +81,29 @@ namespace TestTaskServer
         /// <param name="userFlag">用户标志</param>
         /// <param name="userName">用户名</param>
         /// <returns>用户抽奖分数</returns>
-        public DateTime GetUserLotteryInfo(string userFlag, string userName)
+        public DateTime GetUserLotteryInfo(String userFlag, String userName)
         {
-            var currentUserInfo = LotteryDrawData.Where(r => r.UserFlag == userFlag).ToList();
-            if (!(currentUserInfo != null && currentUserInfo.Count > 0))
+            var currentUserInfo = lotteryDrawData.FirstOrDefault(r => r.UserFlag == userFlag);
+            if (currentUserInfo == null)
             {
                 LotteryDrawModel lotteryDrawModel = new LotteryDrawModel() { UserName = userName, UserFlag = userFlag };
                 LotteryDrawDal.Instance.InsertInitLotteryDrawData(lotteryDrawModel);
 
                 //将当前用户抽奖数据写入抽奖数据中
-                lotteryDrawLock.EnterWriteLock();
-                lotteryDrawData.Add(lotteryDrawModel);
-                lotteryDrawLock.ExitWriteLock();
+                try
+                {
+                    lotteryDrawLock.EnterWriteLock();
+                    lotteryDrawData.Add(lotteryDrawModel);
+                }
+                finally
+                {
+                    lotteryDrawLock.ExitWriteLock();
+                }
 
                 return DateTime.MinValue;
             }
-            else
-            {
-                return currentUserInfo[0].LastLotteryDrawTime;
-            }
+
+            return currentUserInfo.LastLotteryDrawTime;
         }
 
         /// <summary>
@@ -93,18 +111,16 @@ namespace TestTaskServer
         /// </summary>
         /// <param name="userFlag">传入用户标志位</param>
         /// <returns>抽奖积分</returns>
-        public int GetUserPoints(string userFlag)
+        public Int32 GetUserPoints(String userFlag)
         {
             //查询积分
-            var currentUserInfo = LotteryDrawData.Where(r => r.UserFlag == userFlag).ToList();
-            if (currentUserInfo != null & currentUserInfo.Count > 0)
+            var currentUserInfo = lotteryDrawData.FirstOrDefault(r => r.UserFlag == userFlag);
+            if (currentUserInfo != null)
             {
-                return currentUserInfo[0].Points;
+                return currentUserInfo.Points;
             }
-            else
-            {
-                return 0;
-            }
+
+            return 0;
         }
 
         /// <summary>
@@ -113,35 +129,54 @@ namespace TestTaskServer
         /// <returns>返回排行榜数据</returns>
         public List<LotteryDrawModel> GetLotteryDrawChartsData()
         {
-            return LotteryDrawData.Where(
-                r => LotteryDrawConfigBll.Instance.CheckLotteryTimeIsAvailable(r.LastLotteryDrawTime) && r.Points > 0)
-                .OrderByDescending(r => r.Points).Take(20).ToList();
+            try
+            {
+                lotteryDrawLock.EnterReadLock();
+                List<LotteryDrawModel> lotteryDrawModelResult = lotteryDrawData.Where(
+                    r => LotteryDrawConfigBll.Instance.CheckLotteryTimeIsAvailable(r.LastLotteryDrawTime) && r.Points > 0)
+                    .OrderByDescending(r => r.Points).Take(20).ToList();
+
+                return lotteryDrawModelResult;
+            }
+            finally
+            {
+                lotteryDrawLock.ExitReadLock();
+            }
         }
 
         /// <summary>
         /// 修改用户抽奖积分数据
         /// </summary>
-        public void UpdateLotteryDrawData(string userFlag)
+        public void UpdateLotteryDrawData(String userFlag)
         {
             foreach (LotteryDrawModel ldm in lotteryDrawData)
             {
                 if (ldm.UserFlag == userFlag)
                 {
-                    lotteryDrawLock.EnterWriteLock();
-                    if (LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig(ldm.LastLotteryDrawTime))
+                    try
                     {
-                        ldm.Points += 10;
-                    }
-                    else
-                    {
-                        ldm.Points = 10;
-                    }
+                        //修改当前用户的抽奖积分，如果上次抽奖时间在当次活动内，则积分叠加，否则，积分置为第一次抽奖积分
+                        lotteryDrawLock.EnterWriteLock();
 
-                    ldm.LastLotteryDrawTime = DateTime.Now;
-                    lotteryDrawLock.ExitWriteLock();
-                    break;
+                        if (LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig(ldm.LastLotteryDrawTime))
+                        {
+                            ldm.Points += 10;
+                        }
+                        else
+                        {
+                            ldm.Points = 10;
+                        }
+
+                        ldm.LastLotteryDrawTime = DateTime.Now;
+
+                        break;
+                    }
+                    finally
+                    {
+                        lotteryDrawLock.ExitWriteLock();
+                    }
                 }
-            } 
+            }
         }
 
         #endregion

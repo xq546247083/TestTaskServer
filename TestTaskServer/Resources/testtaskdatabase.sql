@@ -2,7 +2,8 @@
 SQLyog Ultimate v12.09 (64 bit)
 MySQL - 5.7.12-log : Database - testtaskdatabase
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 
@@ -21,10 +22,10 @@ USE `testtaskdatabase`;
 DROP TABLE IF EXISTS `lotterydraw`;
 
 CREATE TABLE `lotterydraw` (
-  `SerialNumber` int(11) NOT NULL AUTO_INCREMENT,
+  `SerialNumber` Int32(11) NOT NULL AUTO_INCREMENT,
   `UserName` varchar(16) DEFAULT NULL,
   `UserFlag` varchar(32) DEFAULT NULL,
-  `Points` int(11) DEFAULT '0',
+  `Points` Int32(11) DEFAULT '0',
   `LastLotteryDrawTime` datetime DEFAULT NULL,
   PRIMARY KEY (`SerialNumber`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
@@ -53,7 +54,7 @@ DROP TABLE IF EXISTS `userinfo`;
 CREATE TABLE `userinfo` (
   `UserName` varchar(16) DEFAULT NULL,
   `UserFlag` varchar(32) NOT NULL,
-  `DiamondNumber` int(11) DEFAULT '0',
+  `DiamondNumber` Int32(11) DEFAULT '0',
   PRIMARY KEY (`UserFlag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

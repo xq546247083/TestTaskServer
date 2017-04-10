@@ -70,6 +70,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Global.asax" />
     <Content Include="Resources\jquery-3.2.0.js" />
     <Content Include="MainPage.html" />
     <Content Include="Resources\MySql.Data.dll" />
@@ -88,6 +89,9 @@
     <Compile Include="BLL\LotteryDrawBll.cs" />
     <Compile Include="BLL\LotteryDrawConfigBll.cs" />
     <Compile Include="BLL\UserInfoBll.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
     <Compile Include="Handler\LotteryDrawHandler.cs" />
     <Compile Include="Model\ModelHandler.cs" />
     <Compile Include="Model\LotteryDrawConfigModel.cs" />
