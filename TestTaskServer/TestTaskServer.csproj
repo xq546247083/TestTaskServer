@@ -79,13 +79,14 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BLL\LotteryDrawBll.cs" />
-    <Compile Include="BLL\UserInfoBll.cs" />
     <Compile Include="Common\CommonConst.cs" />
+    <Compile Include="Common\UserInfoDal.cs" />
+    <Compile Include="Common\LotteryDrawConfigDal.cs" />
+    <Compile Include="Common\LotteryDrawDal.cs" />
     <Compile Include="DAL\MySqlHelper.cs" />
-    <Compile Include="DAL\LotteryDrawDal.cs" />
-    <Compile Include="DAL\LotteryDrawConfigDal.cs" />
-    <Compile Include="DAL\UserInfoDal.cs" />
+    <Compile Include="BLL\LotteryDrawBll.cs" />
+    <Compile Include="BLL\LotteryDrawConfigBll.cs" />
+    <Compile Include="BLL\UserInfoBll.cs" />
     <Compile Include="Handler\LotteryDrawHandler.cs" />
     <Compile Include="Model\ModelHandler.cs" />
     <Compile Include="Model\LotteryDrawConfigModel.cs" />

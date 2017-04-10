@@ -12,16 +12,16 @@ namespace TestTaskServer
     [DataContractAttribute]
     public class BaseMsg
     {     
-        private String _flag;
-        private String _msg;
-        private DataTable _dataTable;
-        private string _data;
+        private String flag;
+        private String msg;
+        private DataTable dataTable;
+        private string data;
 
         public BaseMsg(String flag, String msg,DataTable dataTable)
         {
-            this._flag = flag;
-            this._msg = msg;
-            this._dataTable = dataTable;
+            this.flag = flag;
+            this.msg = msg;
+            this.dataTable = dataTable;
         }
 
         /// <summary>
@@ -32,11 +32,11 @@ namespace TestTaskServer
         {
             get 
             { 
-                return _flag; 
+                return flag; 
             }
             set 
             { 
-                _flag = value;
+                flag = value;
             }
         }
 
@@ -48,11 +48,11 @@ namespace TestTaskServer
         {
             get 
             {
-                return _msg;
+                return msg;
             }
             set 
             {
-                _msg = value;
+                msg = value;
             }
         }
 
@@ -65,22 +65,22 @@ namespace TestTaskServer
             get 
             {
                 //将datatable转化为json数组对象
-                if (_dataTable==null||_dataTable.Rows.Count == 0)
+                if (dataTable==null||dataTable.Rows.Count == 0)
                 {
                     return "";
                 }
 
                 StringBuilder jsonBuilder = new StringBuilder();
                 jsonBuilder.Append("[");
-                for (int i = 0; i < _dataTable.Rows.Count; i++)
+                for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
                     jsonBuilder.Append("{");
-                    for (int j = 0; j < _dataTable.Columns.Count; j++)
+                    for (int j = 0; j < dataTable.Columns.Count; j++)
                     {
                         jsonBuilder.Append("'");
-                        jsonBuilder.Append(_dataTable.Columns[j].ColumnName);
+                        jsonBuilder.Append(dataTable.Columns[j].ColumnName);
                         jsonBuilder.Append("':'");
-                        jsonBuilder.Append(_dataTable.Rows[i][j].ToString());
+                        jsonBuilder.Append(dataTable.Rows[i][j].ToString());
                         jsonBuilder.Append("',");
                     }
 
@@ -95,7 +95,7 @@ namespace TestTaskServer
             }
             set
             {
-                _data = value;
+                data = value;
             }
         }
 
@@ -106,11 +106,11 @@ namespace TestTaskServer
         {
             get 
             {
-                return _dataTable; 
+                return dataTable; 
             }
             set 
             { 
-                _dataTable = value; 
+                dataTable = value; 
             }
         }
     }

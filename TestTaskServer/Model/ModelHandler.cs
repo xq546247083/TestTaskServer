@@ -60,5 +60,75 @@ namespace TestTaskServer
         }
 
         #endregion
+
+        #region 实体类转换List
+
+        /// <summary>
+        /// 转换list到DataTable
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="items">数据</param>
+        /// <returns>返回的DataTable</returns>
+        public static DataTable ToDataTable(List<T> items)
+        {
+            var tb = new DataTable(typeof(T).Name);
+            PropertyInfo[] props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (PropertyInfo prop in props)
+            {
+                Type t = GetCoreType(prop.PropertyType);
+                tb.Columns.Add(prop.Name, t);
+            }
+
+            foreach (T item in items)
+            {
+                var values = new object[props.Length];
+
+                for (int i = 0; i < props.Length; i++)
+                {
+                    values[i] = props[i].GetValue(item, null);
+                }
+
+                tb.Rows.Add(values);
+            }
+
+            return tb;
+        }
+
+        /// <summary>
+        /// 判断该类型不为值类型
+        /// </summary>
+        /// <param name="t">类型</param>
+        /// <returns>返回值</returns>
+        public static bool IsNullable(Type t)
+        {
+            return !t.IsValueType || (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>));
+        }
+
+        /// <summary>
+        /// 返回对应的type
+        /// </summary>
+        /// <param name="type">类型</param>
+        /// <returns>返回类型</returns>
+        public static Type GetCoreType(Type type)
+        {
+            if (type != null && IsNullable(type))
+            {
+                if (!type.IsValueType)
+                {
+                    return type;
+                }
+                else
+                {
+                    return Nullable.GetUnderlyingType(type);
+                }
+            }
+            else
+            {
+                return type;
+            }
+        }
+
+        #endregion
     }
 }

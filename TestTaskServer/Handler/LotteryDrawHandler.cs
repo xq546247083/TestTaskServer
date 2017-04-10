@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Web;
 
@@ -81,9 +81,9 @@ namespace TestTaskServer
             {
                 // 用户获取排行榜
                 LotteryDrawBll lotteryDrawBll = new LotteryDrawBll();
-                DataTable chartTable = lotteryDrawBll.GetCharts(ref userFlag);
+                List<LotteryDrawModel> chartData = lotteryDrawBll.GetCharts(ref userFlag);
 
-                HandlerMsg.WriteResponseMsg(HttpContext.Current, true, userFlag, chartTable);
+                HandlerMsg.WriteResponseMsg(HttpContext.Current, true, userFlag, ModelHandler<LotteryDrawModel>.ToDataTable(chartData));
             }
             catch (Exception)
             {
