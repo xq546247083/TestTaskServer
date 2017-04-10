@@ -38,7 +38,6 @@ namespace TestTaskServer
             }
         }
 
-        
         /// <summary>
         ///使用事务执行多个sql命令，且读取数据限制
         /// </summary>

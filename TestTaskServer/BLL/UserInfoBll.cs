@@ -14,6 +14,7 @@ namespace TestTaskServer
             LotteryDrawConfigDal.Instance.CheckLotteryTimeConfig();
             string userName = UserInfoDal.Instance.CheckUserInfo(userFlag);
 
+            //获取当前用户的最新更新时间，当前活动积分，以及判断宝石是否足够
             int currenUserPoints = 0;
             DateTime lastLotteryDrawTime= LotteryDrawDal.Instance.GetUserLotteryInfo(userFlag, userName, ref currenUserPoints);
             UserInfoDal.Instance.LotteryDraw(userFlag, lastLotteryDrawTime);
