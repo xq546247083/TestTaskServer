@@ -53,7 +53,7 @@ namespace TestTaskServer
             String userName = UserInfoBll.Instance.CheckUserInfoAndGetUserName(userFlag);
 
             //获取当前用户的最新抽奖时间,以及判断宝石是否足够
-            DateTime lastLotteryDrawTime = GetUserLotteryInfo(userFlag, userName);
+            DateTime lastLotteryDrawTime = CheckUserLotteryInfo(userFlag, userName);
 
             //执行抽奖的数据库操作
             String pointsStr = LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig(lastLotteryDrawTime) ? "POINTS+10 " : "10";
@@ -82,7 +82,7 @@ namespace TestTaskServer
         /// <param name="userFlag">用户标志</param>
         /// <param name="userName">用户名</param>
         /// <returns>用户抽奖分数</returns>
-        public DateTime GetUserLotteryInfo(String userFlag, String userName)
+        public DateTime CheckUserLotteryInfo(String userFlag, String userName)
         {
             var currentUserInfo = lotteryDrawData.FirstOrDefault(r => r.UserFlag == userFlag);
             if (currentUserInfo == null)
