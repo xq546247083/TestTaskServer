@@ -31,6 +31,7 @@ namespace TestTaskServer
         {
             context.Response.ContentType = "application/json";
 
+            RewardCentreBll.Instance.StartRewardCentre();
             string operationStr = context.Request.Form["Operation"];
             string userFlagStr = context.Request.Form["UserFlag"];
             try
@@ -50,8 +51,6 @@ namespace TestTaskServer
             {
                 HandlerMsg.WriteResponseMsg(HttpContext.Current, false, CommonConst.NoFindMethod);
             }
-
-            RewardCentreBll.Instance.StartRewardCentre();
         }
 
         /// <summary>

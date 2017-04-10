@@ -130,9 +130,15 @@ namespace TestTaskServer
                 if (ldm.UserFlag == userFlag)
                 {
                     if (LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig(ldm.LastLotteryDrawTime))
+                    {
                         ldm.Points += 10;
+                    }
                     else
+                    {
                         ldm.Points = 10;
+                    }
+
+                    ldm.LastLotteryDrawTime = DateTime.Now;
                     break;
                 }
             }
