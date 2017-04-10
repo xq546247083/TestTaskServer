@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace TestTaskServer
@@ -53,7 +54,7 @@ namespace TestTaskServer
                     int index = 1;
                     foreach (LotteryDrawModel lotteryDrawModel in LotteryDrawBll.Instance.GetLotteryDrawChartsData())
                     {
-                        Console.WriteLine(lotteryDrawModel.UserName + ":" + index + "|" + lotteryDrawModel.Points);
+                        Debug.WriteLine(lotteryDrawModel.UserName + ":" + index + "|" + lotteryDrawModel.Points);
                         index++;
                     }
                     break;
