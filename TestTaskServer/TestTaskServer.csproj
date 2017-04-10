@@ -79,6 +79,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BLL\RewardCentreBll.cs" />
     <Compile Include="Common\CommonConst.cs" />
     <Compile Include="Common\UserInfoDal.cs" />
     <Compile Include="Common\LotteryDrawConfigDal.cs" />

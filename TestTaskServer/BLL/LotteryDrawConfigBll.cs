@@ -87,6 +87,15 @@ namespace TestTaskServer
         }
 
         /// <summary>
+        /// 检测当前时间是否大于等于当前活动的结束时间
+        /// </summary>
+        /// <returns>结果</returns>
+        public bool CheckDateTimeIsOverLotteryTime()
+        {
+            return LotteryDrawConfigDS[0].EndTime <= DateTime.Now;
+        }
+
+        /// <summary>
         /// 获取抽奖配置表
         /// </summary>
         /// <returns></returns>

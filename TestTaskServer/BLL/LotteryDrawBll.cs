@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace TestTaskServer
 {
@@ -17,6 +18,11 @@ namespace TestTaskServer
         public volatile static LotteryDrawBll Instance = new LotteryDrawBll();
 
         /// <summary>
+        /// 用户抽奖数据缓存锁
+        /// </summary>
+        private ReaderWriterLockSlim lotteryDrawLock = new ReaderWriterLockSlim();
+
+        /// <summary>
         /// LotteryDrawData的字段
         /// </summary>
         private List<LotteryDrawModel> lotteryDrawData = null;
@@ -28,12 +34,15 @@ namespace TestTaskServer
         {
             get
             {
+                lotteryDrawLock.EnterReadLock();
                 if (lotteryDrawData == null || lotteryDrawData.Count == 0)
                 {
                     lotteryDrawData = LotteryDrawDal.Instance.GetLotteryDrawData();
                 }
 
+                lotteryDrawLock.ExitReadLock();
                 return lotteryDrawData;
+                
             }
         }
 
@@ -66,7 +75,11 @@ namespace TestTaskServer
             {
                 LotteryDrawModel LotteryDrawModel = new LotteryDrawModel() { UserName = userName, UserFlag = userFlag };
                 LotteryDrawDal.Instance.InsertInitLotteryDrawData(LotteryDrawModel);
+
+                //将当前用户抽奖数据写入抽奖数据中
+                lotteryDrawLock.EnterWriteLock();
                 lotteryDrawData.Add(LotteryDrawModel);
+                lotteryDrawLock.ExitWriteLock();
 
                 return DateTime.MinValue;
             }
@@ -99,7 +112,7 @@ namespace TestTaskServer
         /// 获取排行榜
         /// </summary>
         /// <returns>返回排行榜数据</returns>
-        private List<LotteryDrawModel> GetLotteryDrawChartsData()
+        public List<LotteryDrawModel> GetLotteryDrawChartsData()
         {
             return LotteryDrawData.Where(
                 r => LotteryDrawConfigBll.Instance.CheckLotteryTimeIsAvailable(r.LastLotteryDrawTime) && r.Points > 0)
@@ -111,6 +124,7 @@ namespace TestTaskServer
         /// </summary>
         public void UpdateLotteryDrawData(string userFlag)
         {
+            lotteryDrawLock.EnterWriteLock();
             foreach (LotteryDrawModel ldm in lotteryDrawData)
             {
                 if (ldm.UserFlag == userFlag)
@@ -122,6 +136,8 @@ namespace TestTaskServer
                     break;
                 }
             }
+
+            lotteryDrawLock.ExitWriteLock();
         }
 
         #endregion

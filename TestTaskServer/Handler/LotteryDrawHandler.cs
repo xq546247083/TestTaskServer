@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Web;
 
 namespace TestTaskServer
@@ -49,6 +50,8 @@ namespace TestTaskServer
             {
                 HandlerMsg.WriteResponseMsg(HttpContext.Current, false, CommonConst.NoFindMethod);
             }
+
+            RewardCentreBll.Instance.StartRewardCentre();
         }
 
         /// <summary>
