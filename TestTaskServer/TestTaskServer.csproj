@@ -81,9 +81,9 @@
   <ItemGroup>
     <Compile Include="BLL\RewardCentreBll.cs" />
     <Compile Include="Common\CommonConst.cs" />
-    <Compile Include="Common\UserInfoDal.cs" />
-    <Compile Include="Common\LotteryDrawConfigDal.cs" />
-    <Compile Include="Common\LotteryDrawDal.cs" />
+    <Compile Include="DAL\UserInfoDal.cs" />
+    <Compile Include="DAL\LotteryDrawConfigDal.cs" />
+    <Compile Include="DAL\LotteryDrawDal.cs" />
     <Compile Include="DAL\MySqlHelper.cs" />
     <Compile Include="BLL\LotteryDrawBll.cs" />
     <Compile Include="BLL\LotteryDrawConfigBll.cs" />

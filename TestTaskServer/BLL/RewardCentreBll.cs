@@ -46,13 +46,17 @@ namespace TestTaskServer
         /// </summary>
         private void LotteryDrawResultCentre()
         {
-            while (LotteryDrawConfigBll.Instance.CheckDateTimeIsOverLotteryTime())
+            while (true)
             {
-                int index = 1;
-                foreach (LotteryDrawModel lotteryDrawModel in LotteryDrawBll.Instance.GetLotteryDrawChartsData())
+                if (LotteryDrawConfigBll.Instance.CheckDateTimeIsOverLotteryTime())
                 {
-                    Console.WriteLine(lotteryDrawModel.UserName + ":" + index + "|" + lotteryDrawModel.Points);
-                    index++;
+                    int index = 1;
+                    foreach (LotteryDrawModel lotteryDrawModel in LotteryDrawBll.Instance.GetLotteryDrawChartsData())
+                    {
+                        Console.WriteLine(lotteryDrawModel.UserName + ":" + index + "|" + lotteryDrawModel.Points);
+                        index++;
+                    }
+                    break;
                 }
             }
         }

@@ -124,11 +124,11 @@ namespace TestTaskServer
         /// </summary>
         public void UpdateLotteryDrawData(string userFlag)
         {
-            lotteryDrawLock.EnterWriteLock();
             foreach (LotteryDrawModel ldm in lotteryDrawData)
             {
                 if (ldm.UserFlag == userFlag)
                 {
+                    lotteryDrawLock.EnterWriteLock();
                     if (LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig(ldm.LastLotteryDrawTime))
                     {
                         ldm.Points += 10;
@@ -139,11 +139,10 @@ namespace TestTaskServer
                     }
 
                     ldm.LastLotteryDrawTime = DateTime.Now;
+                    lotteryDrawLock.ExitWriteLock();
                     break;
                 }
-            }
-
-            lotteryDrawLock.ExitWriteLock();
+            } 
         }
 
         #endregion
