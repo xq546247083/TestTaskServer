@@ -57,6 +57,7 @@ namespace TestTaskServer
                         Debug.WriteLine(lotteryDrawModel.UserName + ":" + index + "|" + lotteryDrawModel.Points);
                         index++;
                     }
+
                     break;
                 }
             }

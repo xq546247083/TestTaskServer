@@ -42,7 +42,6 @@ namespace TestTaskServer
 
                 lotteryDrawLock.ExitReadLock();
                 return lotteryDrawData;
-                
             }
         }
 
