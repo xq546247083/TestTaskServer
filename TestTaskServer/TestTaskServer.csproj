@@ -79,8 +79,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BLL\LotteryDrawBll.cs" />
+    <Compile Include="BLL\UserInfoBll.cs" />
     <Compile Include="Common\CommonConst.cs" />
     <Compile Include="DAL\MySqlHelper.cs" />
+    <Compile Include="DAL\LotteryDrawDal.cs" />
+    <Compile Include="DAL\LotteryDrawConfigDal.cs" />
     <Compile Include="DAL\UserInfoDal.cs" />
     <Compile Include="Handler\LotteryDrawHandler.cs" />
     <Compile Include="Model\ModelHandler.cs" />
@@ -91,9 +95,7 @@
     <Compile Include="Msg\HandlerMsg.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="BLL\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

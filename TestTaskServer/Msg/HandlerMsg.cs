@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System.Data;
+using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Web;
 
 namespace TestTaskServer
 {
@@ -25,6 +27,20 @@ namespace TestTaskServer
             string strReturn = Encoding.UTF8.GetString(ms.ToArray());
             ms.Close();
             return strReturn;
+        }
+
+        /// <summary>
+        /// 向Http请求回写数据
+        /// </summary>
+        /// <param name="flag">是否成功的标志</param>
+        /// <param name="msg">返回的消息</param>
+        /// <param name="dataTable">返回的数据</param>
+        public static void WriteResponseMsg(HttpContext httpContext, bool flag, string msg, DataTable dataTable = null)
+        {
+            BaseMsg baseMsg = new BaseMsg(flag.ToString(), msg, dataTable);
+            var sd = HandlerMsg.ToJson<BaseMsg>(baseMsg);
+            httpContext.Response.Write(HandlerMsg.ToJson<BaseMsg>(baseMsg));
+            httpContext.ApplicationInstance.CompleteRequest();
         }
     }
 }

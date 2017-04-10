@@ -83,11 +83,14 @@ namespace TestTaskServer
                         jsonBuilder.Append(_dataTable.Rows[i][j].ToString());
                         jsonBuilder.Append("',");
                     }
+
                     jsonBuilder.Remove(jsonBuilder.Length - 1, 1);
                     jsonBuilder.Append("},");
                 }
+
                 jsonBuilder.Remove(jsonBuilder.Length - 1, 1);
                 jsonBuilder.Append("]");
+
                 return jsonBuilder.ToString();
             }
             set

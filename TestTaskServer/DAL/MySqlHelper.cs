@@ -31,17 +31,10 @@ namespace TestTaskServer
             using (MySqlConnection conn = new MySqlConnection(Conn))
             {
                 PrepareCommand(cmd, conn, cmdType, cmdText, commandParameters);
-                try
-                {
-                    int val = cmd.ExecuteNonQuery();
-                    cmd.Parameters.Clear();
 
-                    return val;
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                } 
+                int val = cmd.ExecuteNonQuery();
+                cmd.Parameters.Clear();
+                return val; 
             }
         }
 
@@ -72,6 +65,8 @@ namespace TestTaskServer
                     sqlTransaction = conn.BeginTransaction(IsolationLevel.ReadCommitted);
                     cmd.Connection = conn;
                     cmd.Transaction = sqlTransaction;
+
+                    ///执行操作
                     int val = cmd.ExecuteNonQuery();
                     cmd.Parameters.Clear();
                     sqlTransaction.Commit();
@@ -79,6 +74,7 @@ namespace TestTaskServer
                 }
                 catch (Exception ex)
                 {
+                    //捕获到错误后，先回滚错误，并将错误消息抛出给顶层显示
                     if (sqlTransaction!=null)
                     {
                         sqlTransaction.Rollback();
@@ -100,28 +96,19 @@ namespace TestTaskServer
         {
             //创建一个MySqlCommand对象
             MySqlCommand cmd = new MySqlCommand();
-            //创建一个MySqlConnection对象
             MySqlConnection conn = new MySqlConnection(Conn);
 
-            try
-            {
-                //调用 PrepareCommand 方法，对 MySqlCommand 对象设置参数
-                PrepareCommand(cmd, conn, cmdType, cmdText, commandParameters);
-                //调用 MySqlCommand  的 ExecuteReader 方法
-                MySqlDataAdapter adapter = new MySqlDataAdapter();
-                adapter.SelectCommand = cmd;
-                DataSet ds = new DataSet();
+            //调用 PrepareCommand 方法，对 MySqlCommand 对象设置参数
+            PrepareCommand(cmd, conn, cmdType, cmdText, commandParameters);
+            MySqlDataAdapter adapter = new MySqlDataAdapter();
+            adapter.SelectCommand = cmd;
+            DataSet ds = new DataSet();
+            adapter.Fill(ds);
 
-                adapter.Fill(ds);
-                //清除参数
-                cmd.Parameters.Clear();
-                conn.Close();
-                return ds;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            //清除参数
+            cmd.Parameters.Clear();
+            conn.Close();
+            return ds;
         }
 
         /// <summary>
@@ -135,28 +122,19 @@ namespace TestTaskServer
         {
             //创建一个MySqlCommand对象
             MySqlCommand cmd = new MySqlCommand();
-            //创建一个MySqlConnection对象
             MySqlConnection conn = new MySqlConnection(Conn);
 
-            try
-            {
-                //调用 PrepareCommand 方法，对 MySqlCommand 对象设置参数
-                PrepareCommand(cmd, conn, cmdType, cmdText, commandParameters);
-                //调用 MySqlCommand  的 ExecuteReader 方法
-                MySqlDataAdapter adapter = new MySqlDataAdapter();
-                adapter.SelectCommand = cmd;
-                DataSet ds = new DataSet();
+            //调用 PrepareCommand 方法，对 MySqlCommand 对象设置参数
+            PrepareCommand(cmd, conn, cmdType, cmdText, commandParameters);
+            MySqlDataAdapter adapter = new MySqlDataAdapter();
+            adapter.SelectCommand = cmd;
+            DataSet ds = new DataSet();
+            adapter.Fill(ds);
 
-                adapter.Fill(ds);
-                //清除参数
-                cmd.Parameters.Clear();
-                conn.Close();
-                return ModelHandler<T>.FillModel(ds); 
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            //清除参数
+            cmd.Parameters.Clear();
+            conn.Close();
+            return ModelHandler<T>.FillModel(ds); 
         }
 
         /// <summary>
@@ -181,6 +159,5 @@ namespace TestTaskServer
                     cmd.Parameters.Add(parm);
             }
         }
-
     }
 }

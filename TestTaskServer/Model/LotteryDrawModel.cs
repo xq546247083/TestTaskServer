@@ -1,4 +1,4 @@
-﻿
+﻿using System;
 namespace TestTaskServer
 {
     public class LotteryDrawModel
@@ -22,5 +22,10 @@ namespace TestTaskServer
         /// 抽奖分数
         /// </summary>
         public int Points { get; set; }
+
+        /// <summary>
+        /// 最新抽奖时间
+        /// </summary>
+        public DateTime LastLotteryDrawTime { get; set; }
     }
 }

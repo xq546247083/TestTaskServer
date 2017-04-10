@@ -10,7 +10,7 @@ namespace TestTaskServer
     /// </summary>
     public class LotteryDrawHandler : IHttpHandler
     {
-        #region method
+        #region 方法
 
         public bool IsReusable
         {
@@ -45,9 +45,9 @@ namespace TestTaskServer
                     methodInfo.Invoke(this, new string[] { userFlagStr });
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                WriteResponseMsg(false, CommonConst.NoFindMethod);
+                HandlerMsg.WriteResponseMsg(HttpContext.Current, false, CommonConst.NoFindMethod);
             }
         }
 
@@ -60,12 +60,14 @@ namespace TestTaskServer
             try
             {
                 // 用户抽奖
-                UserInfoDal.Instance.LotteryDraw(userFlag);
-                WriteResponseMsg(true, CommonConst.LotteryDrawSuccess);
+                UserInfoBll userInfoBll = new UserInfoBll();
+                userInfoBll.LotteryDraw(userFlag);
+
+                HandlerMsg.WriteResponseMsg(HttpContext.Current, true, CommonConst.LotteryDrawSuccess);
             }
             catch (Exception ex)
             {
-                WriteResponseMsg(false, ex.Message);
+                HandlerMsg.WriteResponseMsg(HttpContext.Current, false, ex.Message);
             }
         }
 
@@ -78,27 +80,15 @@ namespace TestTaskServer
             try
             {
                 // 用户获取排行榜
-                DataTable chartTable = UserInfoDal.Instance.GetCharts(ref userFlag);
-                WriteResponseMsg(true, userFlag, chartTable);
+                LotteryDrawBll lotteryDrawBll = new LotteryDrawBll();
+                DataTable chartTable = lotteryDrawBll.GetCharts(ref userFlag);
+
+                HandlerMsg.WriteResponseMsg(HttpContext.Current, true, userFlag, chartTable);
             }
             catch (Exception)
             {
-                WriteResponseMsg(false, CommonConst.FailGetData);
+                HandlerMsg.WriteResponseMsg(HttpContext.Current, false, CommonConst.FailGetData);
             }
-        }
-
-        /// <summary>
-        /// 向Http请求回写数据
-        /// </summary>
-        /// <param name="flag">是否成功的标志</param>
-        /// <param name="msg">返回的消息</param>
-        /// <param name="dataTable">返回的数据</param>
-        private void WriteResponseMsg(bool flag, string msg, DataTable dataTable = null)
-        {
-            BaseMsg baseMsg = new BaseMsg(flag.ToString(), msg, dataTable);
-            var sd = HandlerMsg.ToJson<BaseMsg>(baseMsg);
-            HttpContext.Current.Response.Write(HandlerMsg.ToJson<BaseMsg>(baseMsg));
-            HttpContext.Current.ApplicationInstance.CompleteRequest();
         }
 
         #endregion
