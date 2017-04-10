@@ -72,12 +72,12 @@ namespace TestTaskServer
             var currentUserInfo = LotteryDrawData.Where(r => r.UserFlag == userFlag).ToList();
             if (!(currentUserInfo != null && currentUserInfo.Count > 0))
             {
-                LotteryDrawModel LotteryDrawModel = new LotteryDrawModel() { UserName = userName, UserFlag = userFlag };
-                LotteryDrawDal.Instance.InsertInitLotteryDrawData(LotteryDrawModel);
+                LotteryDrawModel lotteryDrawModel = new LotteryDrawModel() { UserName = userName, UserFlag = userFlag };
+                LotteryDrawDal.Instance.InsertInitLotteryDrawData(lotteryDrawModel);
 
                 //将当前用户抽奖数据写入抽奖数据中
                 lotteryDrawLock.EnterWriteLock();
-                lotteryDrawData.Add(LotteryDrawModel);
+                lotteryDrawData.Add(lotteryDrawModel);
                 lotteryDrawLock.ExitWriteLock();
 
                 return DateTime.MinValue;
