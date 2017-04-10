@@ -1,7 +1,0 @@
-E:\Work\TestTaskServer\TestTaskServer\bin\TestTaskServer.dll.config
-E:\Work\TestTaskServer\TestTaskServer\bin\TestTaskServer.dll
-E:\Work\TestTaskServer\TestTaskServer\bin\TestTaskServer.pdb
-E:\Work\TestTaskServer\TestTaskServer\bin\MySql.Data.dll
-E:\Work\TestTaskServer\TestTaskServer\obj\Debug\TestTaskServer.dll
-E:\Work\TestTaskServer\TestTaskServer\obj\Debug\TestTaskServer.pdb
-E:\Work\TestTaskServer\TestTaskServer\obj\Debug\TestTaskServer.csprojResolveAssemblyReference.cache
