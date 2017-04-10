@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace TestTaskServer
 {
     /// <summary>
-    /// 用户操作类
+    /// 抽奖配置信息类
     /// </summary>
     public class LotteryDrawConfigBll
     {
@@ -47,17 +47,16 @@ namespace TestTaskServer
         {
             if (GetLotteryDrawConfigDs() != null && GetLotteryDrawConfigDs().Count > 0)
             {
-                // 判断活动时间
+                // 判断活动时间，并提示响应的消息
                 if (GetLotteryDrawConfigDs()[0].BeginTime > DateTime.Now)
                 {
-                    //如果开始时间大于当前时间，则提示活动未开始
                     throw new Exception(CommonConst.NotBeginActivity);
                 }
                 else if (GetLotteryDrawConfigDs()[0].EndTime < DateTime.Now)
                 {
-                    //如果结束时间小于当前时间，则提示活动已结局
                     throw new Exception(CommonConst.ShutDownActivity);
                 }
+                //抽奖时间检测通过，不报错，直接返回
             }
             else
             {

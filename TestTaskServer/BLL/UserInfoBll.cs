@@ -35,7 +35,7 @@ namespace TestTaskServer
         /// </summary>
         /// <param name="userFlag">用户标志</param>
         /// <returns>用户名</returns>
-        public String CheckUserInfo(String userFlag)
+        public String CheckUserInfoAndGetUserName(String userFlag)
         {
             //用户名
             String userName = "";
@@ -45,7 +45,9 @@ namespace TestTaskServer
             {
                 userName = userInfoDs[0].UserName;
                 if (userInfoDs[0].DiamondNumber < 100)
+                {
                     throw new Exception(CommonConst.NoEnoughDiamond);
+                }
             }
             else
             {

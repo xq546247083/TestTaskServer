@@ -49,7 +49,8 @@ namespace TestTaskServer
         public void LotteryDraw(String userFlag)
         {
             LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig();
-            String userName = UserInfoBll.Instance.CheckUserInfo(userFlag);
+
+            String userName = UserInfoBll.Instance.CheckUserInfoAndGetUserName(userFlag);
 
             //获取当前用户的最新抽奖时间,以及判断宝石是否足够
             DateTime lastLotteryDrawTime = GetUserLotteryInfo(userFlag, userName);
@@ -131,6 +132,7 @@ namespace TestTaskServer
         {
             try
             {
+                //获取排行榜数据
                 lotteryDrawLock.EnterReadLock();
                 List<LotteryDrawModel> lotteryDrawModelResult = lotteryDrawData.Where(
                     r => LotteryDrawConfigBll.Instance.CheckLotteryTimeIsAvailable(r.LastLotteryDrawTime) && r.Points > 0)
@@ -151,30 +153,28 @@ namespace TestTaskServer
         {
             foreach (LotteryDrawModel ldm in lotteryDrawData)
             {
-                if (ldm.UserFlag == userFlag)
+                if (ldm.UserFlag != userFlag) continue;
+                try
                 {
-                    try
+                    //修改当前用户的抽奖积分，如果上次抽奖时间在当次活动内，则积分叠加，否则，积分置为第一次抽奖积分
+                    lotteryDrawLock.EnterWriteLock();
+
+                    if (!LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig(ldm.LastLotteryDrawTime))
                     {
-                        //修改当前用户的抽奖积分，如果上次抽奖时间在当次活动内，则积分叠加，否则，积分置为第一次抽奖积分
-                        lotteryDrawLock.EnterWriteLock();
-
-                        if (LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig(ldm.LastLotteryDrawTime))
-                        {
-                            ldm.Points += 10;
-                        }
-                        else
-                        {
-                            ldm.Points = 10;
-                        }
-
-                        ldm.LastLotteryDrawTime = DateTime.Now;
-
-                        break;
+                        ldm.Points = 10;
                     }
-                    finally
+                    else
                     {
-                        lotteryDrawLock.ExitWriteLock();
+                        ldm.Points += 10;
                     }
+
+                    ldm.LastLotteryDrawTime = DateTime.Now;
+
+                    break;
+                }
+                finally
+                {
+                    lotteryDrawLock.ExitWriteLock();
                 }
             }
         }

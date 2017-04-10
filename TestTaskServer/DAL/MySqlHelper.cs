@@ -52,7 +52,9 @@ namespace TestTaskServer
             using (MySqlConnection conn = new MySqlConnection(Conn))
             {
                 if (conn.State != ConnectionState.Open)
+                {
                     conn.Open();
+                }
 
                 //设置命令
                 foreach (String cmdText in cmdTextArray)
@@ -150,8 +152,10 @@ namespace TestTaskServer
         private static void PrepareCommand(MySqlCommand cmd, MySqlConnection conn, CommandType cmdType, String cmdText, MySqlParameter[] cmdParms)
         {
             if (conn.State != ConnectionState.Open)
+            {
                 conn.Open();
-
+            }
+                
             cmd.Connection = conn;
             cmd.CommandText = cmdText;
             cmd.CommandType = cmdType;
@@ -159,7 +163,9 @@ namespace TestTaskServer
             if (cmdParms != null)
             {
                 foreach (MySqlParameter parm in cmdParms)
+                {
                     cmd.Parameters.Add(parm);
+                }
             }
         }
     }
