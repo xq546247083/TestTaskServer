@@ -38,7 +38,7 @@ namespace TestTaskServer
             };
             mySqlParameter[0].Value = userFlag;
 
-            return MySqlHelper.GetDataList<UserInfoModel>(CommandType.Text, "SELECT * FROM userinfo WHERE UserFlag= @userFlag ", mySqlParameter);
+            return MySqlHelper.GetDataList<UserInfoModel>(CommandType.Text, SqlConst.GetUserInfoStr, mySqlParameter);
         }
 
         /// <summary>
@@ -58,8 +58,7 @@ namespace TestTaskServer
             mySqlParameter[1].Value = userInfoModel.DiamondNumber - 100;
 
             //更新用户信息
-            String updateDiamondNumberStr = "UPDATE userinfo SET DiamondNumber=@diamondNumber WHERE UserFlag=@userFlag;";
-            return MySqlHelper.ExecuteNonQuery(mySqlTransaction, CommandType.Text, updateDiamondNumberStr, mySqlParameter);
+            return MySqlHelper.ExecuteNonQuery(mySqlTransaction, CommandType.Text, SqlConst.UpdateDiamondNumberStr, mySqlParameter);
         }
     }
 }

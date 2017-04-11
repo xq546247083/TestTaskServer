@@ -73,6 +73,7 @@
     <Content Include="Global.asax" />
     <Content Include="Resources\jquery-3.2.0.js" />
     <Content Include="MainPage.html" />
+    <Content Include="Resources\jquery-3.2.1.js" />
     <Content Include="Resources\MySql.Data.dll" />
     <Content Include="Resources\testtaskdatabase.sql" />
     <Content Include="Web.config">

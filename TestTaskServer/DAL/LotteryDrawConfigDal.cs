@@ -30,7 +30,7 @@ namespace TestTaskServer
         /// <returns>抽奖配置数据</returns>
         public List<LotteryDrawConfigModel> GetLotteryDrawConfigData()
         {
-            return MySqlHelper.GetDataList<LotteryDrawConfigModel>(CommandType.Text, "SELECT * FROM LotterydrawConfig");
+            return MySqlHelper.GetDataList<LotteryDrawConfigModel>(CommandType.Text, SqlConst.GetLotteryConfigInfoStr);
         }
     }
 }

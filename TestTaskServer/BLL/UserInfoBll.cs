@@ -52,7 +52,7 @@ namespace TestTaskServer
             //获取用户数据,先从缓存中读取用户数据,如果没有，则从数据库读取数据
             UserInfoModel currentUserInfo = null;
 
-            userInfoLock.ExitReadLock();
+            userInfoLock.EnterReadLock();
             try
             {
                 currentUserInfo = userInfoData.FirstOrDefault(r => r.UserFlag.Equals(userFlag));

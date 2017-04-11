@@ -40,7 +40,7 @@ namespace TestTaskServer
             mySqlParameter[0].Value = lotteryDrawModel.UserName;
             mySqlParameter[1].Value = lotteryDrawModel.UserFlag;
 
-            MySqlHelper.ExecuteNonQuery(CommandType.Text, "INSERT INTO lotterydraw (userName,userflag) VALUES (@userName,@userflag)", mySqlParameter);
+            MySqlHelper.ExecuteNonQuery(CommandType.Text, SqlConst.InsertLotteryDrawInfoStr, mySqlParameter);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace TestTaskServer
         /// <returns>抽奖数据</returns>
         public List<LotteryDrawModel> GetLotteryDrawData()
         {
-            return MySqlHelper.GetDataList<LotteryDrawModel>(CommandType.Text, "SELECT * FROM lotterydraw");
+            return MySqlHelper.GetDataList<LotteryDrawModel>(CommandType.Text, SqlConst.GetLotteryDrawInfoStr);
         }
 
         /// <summary>
@@ -68,11 +68,10 @@ namespace TestTaskServer
             };
             mySqlParameter[0].Value = lotteryDrawModel.UserFlag;
             mySqlParameter[1].Value = lotteryDrawModel.Points + 10;
-            mySqlParameter[1].Value = DateTime.Now;
+            mySqlParameter[2].Value = DateTime.Now;
 
             //更新用户信息
-            String lotteryDrawPointStr = "UPDATE lotterydraw SET POINTS= @pointsStr,LastLotteryDrawTime=@lastLotteryDrawTime WHERE UserFlag= @userFlag;";
-            return MySqlHelper.ExecuteNonQuery(mySqlTransaction, CommandType.Text, lotteryDrawPointStr, mySqlParameter);
+            return MySqlHelper.ExecuteNonQuery(mySqlTransaction, CommandType.Text, SqlConst.UpdateLotteryDrawInfoStr, mySqlParameter);
         }
     }
 }
