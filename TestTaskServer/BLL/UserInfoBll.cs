@@ -101,7 +101,7 @@ namespace TestTaskServer
         /// <summary>
         /// 更新当前用户的宝石数量
         /// </summary>
-        /// <param name="userFlag"></param>
+        /// <param name="userFlag">用户标志</param>
         internal void UpdateUserDiamondData(string userFlag)
         {
             foreach (UserInfoModel userInfo in userInfoData)
