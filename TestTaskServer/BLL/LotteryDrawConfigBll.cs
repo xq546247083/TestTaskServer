@@ -56,6 +56,7 @@ namespace TestTaskServer
                 {
                     throw new Exception(CommonConst.ShutDownActivity);
                 }
+
                 //抽奖时间检测通过，不报错，直接返回
             }
             else

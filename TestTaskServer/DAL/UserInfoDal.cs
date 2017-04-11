@@ -44,16 +44,14 @@ namespace TestTaskServer
         /// <summary>
         /// 用户抽奖操作
         /// </summary>
-        /// <param name="userFlag">用户标志</param>
-        /// <param name="lastLotteryDrawTime">最新抽奖时间</param>
-        /// <param name="pointsStr">分数变更方式</param>
-        public void UserLotteryDrwaOperation(String userFlag, DateTime lastLotteryDrawTime, String pointsStr)
+        /// <param name="commandParameters">数据库操作参数</param>
+        public void UserLotteryDrwaOperation(MySqlParameter[] commandParameters)
         {
             //事务更新宝石数量和积分
-            String updateDiamondNumberStr = String.Format("UPDATE userinfo SET DiamondNumber=DiamondNumber-100 WHERE UserFlag='{0}';", userFlag);
-            String lotteryDrawPointStr = String.Format("UPDATE lotterydraw SET POINTS= " + pointsStr + ",LastLotteryDrawTime='{0}' WHERE UserFlag='{1}';", DateTime.Now, userFlag);
+            String updateDiamondNumberStr = "UPDATE userinfo SET DiamondNumber=DiamondNumber-100 WHERE UserFlag=userFlag@;";
+            String lotteryDrawPointStr = "UPDATE lotterydraw SET POINTS= @pointsStr,LastLotteryDrawTime=NOW() WHERE UserFlag= @userFlag;";
 
-            MySqlHelper.ExecuteTranNonQuery(updateDiamondNumberStr, lotteryDrawPointStr);
+            MySqlHelper.ExecuteTranNonQuery(commandParameters, updateDiamondNumberStr, lotteryDrawPointStr);
         }
     }
 }

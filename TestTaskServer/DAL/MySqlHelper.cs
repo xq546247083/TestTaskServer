@@ -39,12 +39,13 @@ namespace TestTaskServer
             }
         }
 
-        /// <summary>
-        ///使用事务执行多个sql命令，且读取数据限制
-        /// </summary>
+        ///  <summary>
+        /// 使用事务执行多个sql命令，且读取数据限制
+        ///  </summary>
+        /// <param name="commandParameters">命令参数</param>
         /// <param name="cmdTextArray">sql命令语句集合</param>
-        /// <returns>执行命令所影响的行数</returns>
-        public static Int32 ExecuteTranNonQuery(params String[] cmdTextArray)
+        ///  <returns>执行命令所影响的行数</returns>
+        public static Int32 ExecuteTranNonQuery(MySqlParameter[] commandParameters,params String[] cmdTextArray)
         {
             MySqlCommand cmd = new MySqlCommand();
             MySqlTransaction sqlTransaction =null;
@@ -60,6 +61,14 @@ namespace TestTaskServer
                 foreach (String cmdText in cmdTextArray)
                 {
                     cmd.CommandText += cmdText + " ";
+                }
+
+                if (commandParameters != null)
+                {
+                    foreach (MySqlParameter parm in commandParameters)
+                    {
+                        cmd.Parameters.Add(parm);
+                    }
                 }
 
                 try

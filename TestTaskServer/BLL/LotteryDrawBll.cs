@@ -5,6 +5,8 @@ using System.Threading;
 
 namespace TestTaskServer
 {
+    using MySql.Data.MySqlClient;
+
     /// <summary>
     /// 用户抽奖类
     /// </summary>
@@ -56,11 +58,20 @@ namespace TestTaskServer
             DateTime lastLotteryDrawTime = CheckUserLotteryInfo(userFlag, userName);
 
             //执行抽奖的数据库操作
-            String pointsStr = LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig(lastLotteryDrawTime) ? "POINTS+10 " : "10";
-            UserInfoDal.Instance.UserLotteryDrwaOperation(userFlag, lastLotteryDrawTime, pointsStr);
+            MySqlParameter[] mySqlParameter = new MySqlParameter[]
+            {
+                new MySqlParameter("@userFlag",MySqlDbType.VarChar,32),
+                new MySqlParameter("@pointsStr",MySqlDbType.VarChar,32)       
+            };
+            mySqlParameter[0].Value = userFlag;
+            mySqlParameter[1].Value = LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig(lastLotteryDrawTime) ? "POINTS+10 " : "10";
+            UserInfoDal.Instance.UserLotteryDrwaOperation(mySqlParameter);
 
             //更新用户抽奖数据
             UpdateLotteryDrawData(userFlag);
+
+            //更新用户宝石数据
+            UserInfoBll.Instance.UpdateUserDiamondData(userFlag);
         }
 
         /// <summary>
@@ -153,7 +164,11 @@ namespace TestTaskServer
         {
             foreach (LotteryDrawModel ldm in lotteryDrawData)
             {
-                if (ldm.UserFlag != userFlag) continue;
+                if (ldm.UserFlag != userFlag)
+                {
+                    continue;
+                }
+
                 try
                 {
                     //修改当前用户的抽奖积分，如果上次抽奖时间在当次活动内，则积分叠加，否则，积分置为第一次抽奖积分
