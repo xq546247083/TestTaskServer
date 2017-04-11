@@ -23,7 +23,7 @@ namespace TestTaskServer
         {
             DataContractJsonSerializer djs = new DataContractJsonSerializer(typeof(T));
 
-            using(MemoryStream memoryStream = new MemoryStream())
+            using (MemoryStream memoryStream = new MemoryStream())
             {
                 djs.WriteObject(memoryStream, t);
                 String strReturn = Encoding.UTF8.GetString(memoryStream.ToArray());

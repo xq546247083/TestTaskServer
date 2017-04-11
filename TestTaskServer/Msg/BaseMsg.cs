@@ -11,13 +11,13 @@ namespace TestTaskServer
     [Serializable]
     [DataContractAttribute]
     public class BaseMsg
-    {     
+    {
         private String flag;
         private String msg;
         private DataTable dataTable;
         private String data;
 
-        public BaseMsg(String flag, String msg,DataTable dataTable)
+        public BaseMsg(String flag, String msg, DataTable dataTable)
         {
             this.flag = flag;
             this.msg = msg;
@@ -30,12 +30,12 @@ namespace TestTaskServer
         [DataMember(Order = 0)]
         public String Flag
         {
-            get 
-            { 
-                return flag; 
+            get
+            {
+                return flag;
             }
-            set 
-            { 
+            set
+            {
                 flag = value;
             }
         }
@@ -46,11 +46,11 @@ namespace TestTaskServer
         [DataMember(Order = 1)]
         public String Msg
         {
-            get 
+            get
             {
                 return msg;
             }
-            set 
+            set
             {
                 msg = value;
             }
@@ -62,10 +62,10 @@ namespace TestTaskServer
         [DataMember(Order = 2)]
         public String Data
         {
-            get 
+            get
             {
                 //将datatable转化为json数组对象
-                if (dataTable==null||dataTable.Rows.Count == 0)
+                if (dataTable == null || dataTable.Rows.Count == 0)
                 {
                     return "";
                 }
@@ -90,7 +90,7 @@ namespace TestTaskServer
 
                 jsonBuilder.Remove(jsonBuilder.Length - 1, 1);
                 jsonBuilder.Append("]");
-                data=jsonBuilder.ToString();
+                data = jsonBuilder.ToString();
 
                 return data;
             }
@@ -105,13 +105,13 @@ namespace TestTaskServer
         /// </summary>
         public DataTable DataTable
         {
-            get 
+            get
             {
-                return dataTable; 
+                return dataTable;
             }
-            set 
-            { 
-                dataTable = value; 
+            set
+            {
+                dataTable = value;
             }
         }
     }

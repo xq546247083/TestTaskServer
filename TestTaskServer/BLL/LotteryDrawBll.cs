@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 
@@ -52,20 +53,15 @@ namespace TestTaskServer
         {
             LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig();
 
-            String userName = UserInfoBll.Instance.CheckUserInfoAndGetUserName(userFlag);
+            //获取用户信息，并判断宝石数量
+            UserInfoModel userInfo = UserInfoBll.Instance.GetUserInfo(userFlag);
+            UserInfoBll.Instance.CheckUserDiamond(userInfo);
 
-            //获取当前用户的最新抽奖时间,以及判断宝石是否足够
-            DateTime lastLotteryDrawTime = CheckUserLotteryInfo(userFlag, userName);
+            //检测用户抽奖信息，并获取当前用户的抽奖信息
+            LotteryDrawModel userLotteryInfo = CheckUserLotteryInfo(userFlag, userInfo.UserName);
 
             //执行抽奖的数据库操作
-            MySqlParameter[] mySqlParameter = new MySqlParameter[]
-            {
-                new MySqlParameter("@userFlag",MySqlDbType.VarChar,32),
-                new MySqlParameter("@pointsStr",MySqlDbType.VarChar,32)       
-            };
-            mySqlParameter[0].Value = userFlag;
-            mySqlParameter[1].Value = LotteryDrawConfigBll.Instance.CheckLotteryTimeConfig(lastLotteryDrawTime) ? "POINTS+10 " : "10";
-            UserInfoDal.Instance.UserLotteryDrwaOperation(mySqlParameter);
+            CommonTranDal.Instance.UserLotteryTran(userInfo, userLotteryInfo);
 
             //更新用户抽奖数据
             UpdateLotteryDrawData(userFlag);
@@ -88,34 +84,32 @@ namespace TestTaskServer
         }
 
         /// <summary>
-        /// 查询是否存在抽奖关联数据，不存在则插入数据，并返回当前用户分数
+        /// 查询是否存在抽奖关联数据，不存在则插入数据，并返回当前用户抽奖信息
         /// </summary>
         /// <param name="userFlag">用户标志</param>
         /// <param name="userName">用户名</param>
         /// <returns>用户抽奖分数</returns>
-        public DateTime CheckUserLotteryInfo(String userFlag, String userName)
+        public LotteryDrawModel CheckUserLotteryInfo(String userFlag, String userName)
         {
-            var currentUserInfo = lotteryDrawData.FirstOrDefault(r => r.UserFlag == userFlag);
-            if (currentUserInfo == null)
+            var currentUserLotteryInfo = lotteryDrawData.FirstOrDefault(r => r.UserFlag == userFlag);
+            if (currentUserLotteryInfo == null)
             {
-                LotteryDrawModel lotteryDrawModel = new LotteryDrawModel() { UserName = userName, UserFlag = userFlag };
-                LotteryDrawDal.Instance.InsertInitLotteryDrawData(lotteryDrawModel);
+                currentUserLotteryInfo = new LotteryDrawModel { UserName = userName, UserFlag = userFlag, Points = 0, LastLotteryDrawTime = DateTime.MinValue };
+                LotteryDrawDal.Instance.InsertInitLotteryDrawData(currentUserLotteryInfo);
 
                 //将当前用户抽奖数据写入抽奖数据中
                 try
                 {
                     lotteryDrawLock.EnterWriteLock();
-                    lotteryDrawData.Add(lotteryDrawModel);
+                    lotteryDrawData.Add(currentUserLotteryInfo);
                 }
                 finally
                 {
                     lotteryDrawLock.ExitWriteLock();
                 }
-
-                return DateTime.MinValue;
             }
 
-            return currentUserInfo.LastLotteryDrawTime;
+            return currentUserLotteryInfo;
         }
 
         /// <summary>

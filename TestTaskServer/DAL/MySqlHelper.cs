@@ -30,12 +30,12 @@ namespace TestTaskServer
 
             using (MySqlConnection conn = new MySqlConnection(Conn))
             {
-                PrepareCommand(cmd, conn, cmdType, cmdText, commandParameters);
+                PrepareCommand(cmd, conn, null, cmdType, cmdText, commandParameters);
 
                 Int32 val = cmd.ExecuteNonQuery();
                 cmd.Parameters.Clear();
 
-                return val; 
+                return val;
             }
         }
 
@@ -45,10 +45,10 @@ namespace TestTaskServer
         /// <param name="commandParameters">命令参数</param>
         /// <param name="cmdTextArray">sql命令语句集合</param>
         ///  <returns>执行命令所影响的行数</returns>
-        public static Int32 ExecuteTranNonQuery(MySqlParameter[] commandParameters,params String[] cmdTextArray)
+        public static Int32 ExecuteTranNonQuery(MySqlParameter[] commandParameters, params String[] cmdTextArray)
         {
             MySqlCommand cmd = new MySqlCommand();
-            MySqlTransaction sqlTransaction =null;
+            MySqlTransaction sqlTransaction = null;
 
             using (MySqlConnection conn = new MySqlConnection(Conn))
             {
@@ -87,14 +87,34 @@ namespace TestTaskServer
                 catch (Exception)
                 {
                     //捕获到错误后，先回滚错误，并将错误消息抛出给顶层显示
-                    if (sqlTransaction!=null)
+                    if (sqlTransaction != null)
                     {
                         sqlTransaction.Rollback();
                     }
 
                     throw;
                 }
-            } 
+            }
+        }
+
+        /// <summary>
+        ///使用现有的SQL事务执行一个sql命令（不返回数据集）
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        /// <param name="trans">一个现有的事务</param>
+        /// <param name="cmdType">命令类型(存储过程, 文本, 等等)</param>
+        /// <param name="cmdText">存储过程名称或者sql命令语句</param>
+        /// <param name="commandParameters">执行命令所用参数的集合</param>
+        /// <returns>执行命令所影响的行数</returns>
+        public static Int32 ExecuteNonQuery(MySqlTransaction trans, CommandType cmdType, string cmdText, params MySqlParameter[] commandParameters)
+        {
+            MySqlCommand cmd = new MySqlCommand();
+            PrepareCommand(cmd, trans.Connection, trans, cmdType, cmdText, commandParameters);
+            int val = cmd.ExecuteNonQuery();
+            cmd.Parameters.Clear();
+
+            return val;
         }
 
         /// <summary>
@@ -104,15 +124,15 @@ namespace TestTaskServer
         /// <param name="cmdText">存储过程名称或者sql命令语句</param>
         /// <param name="commandParameters">执行命令所用参数的集合</param>
         /// <returns></returns>
-        public static DataSet GetDataSet( CommandType cmdType, String cmdText, params MySqlParameter[] commandParameters)
+        public static DataSet GetDataSet(CommandType cmdType, String cmdText, params MySqlParameter[] commandParameters)
         {
             //创建一个MySqlCommand对象
             MySqlCommand cmd = new MySqlCommand();
             using (MySqlConnection conn = new MySqlConnection(Conn))
             {
                 //调用 PrepareCommand 方法，对 MySqlCommand 对象设置参数
-                PrepareCommand(cmd, conn, cmdType, cmdText, commandParameters);
-                MySqlDataAdapter adapter = new MySqlDataAdapter {SelectCommand = cmd};
+                PrepareCommand(cmd, conn, null, cmdType, cmdText, commandParameters);
+                MySqlDataAdapter adapter = new MySqlDataAdapter { SelectCommand = cmd };
                 DataSet ds = new DataSet();
                 adapter.Fill(ds);
 
@@ -137,7 +157,7 @@ namespace TestTaskServer
             using (MySqlConnection conn = new MySqlConnection(Conn))
             {
                 //调用 PrepareCommand 方法，对 MySqlCommand 对象设置参数
-                PrepareCommand(cmd, conn, cmdType, cmdText, commandParameters);
+                PrepareCommand(cmd, conn, null, cmdType, cmdText, commandParameters);
                 MySqlDataAdapter adapter = new MySqlDataAdapter();
                 adapter.SelectCommand = cmd;
                 DataSet ds = new DataSet();
@@ -146,7 +166,7 @@ namespace TestTaskServer
                 //清除参数
                 cmd.Parameters.Clear();
 
-                return ModelHandler<T>.FillModel(ds); 
+                return ModelHandler<T>.FillModel(ds);
             }
         }
 
@@ -158,16 +178,22 @@ namespace TestTaskServer
         /// <param name="cmdType">命令类型例如 存储过程或者文本</param>
         /// <param name="cmdText">命令文本,例如:Select * from Products</param>
         /// <param name="cmdParms">执行命令的参数</param>
-        private static void PrepareCommand(MySqlCommand cmd, MySqlConnection conn, CommandType cmdType, String cmdText, MySqlParameter[] cmdParms)
+        private static void PrepareCommand(MySqlCommand cmd, MySqlConnection conn, MySqlTransaction trans, CommandType cmdType, String cmdText, MySqlParameter[] cmdParms)
         {
             if (conn.State != ConnectionState.Open)
             {
                 conn.Open();
             }
-                
+
+            //准备cmd命令的参数
             cmd.Connection = conn;
             cmd.CommandText = cmdText;
             cmd.CommandType = cmdType;
+            if (trans != null)
+            {
+                cmd.Transaction = trans;
+
+            }
 
             if (cmdParms != null)
             {

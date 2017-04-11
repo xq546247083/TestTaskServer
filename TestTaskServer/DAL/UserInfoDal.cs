@@ -42,16 +42,24 @@ namespace TestTaskServer
         }
 
         /// <summary>
-        /// 用户抽奖操作
+        /// 更新用户信息
         /// </summary>
-        /// <param name="commandParameters">数据库操作参数</param>
-        public void UserLotteryDrwaOperation(MySqlParameter[] commandParameters)
+        /// <param name="mySqlTransaction">事务</param>
+        /// <param name="userInfoModel">用户信息</param>
+        public Int32 UpdateUserInfo(MySqlTransaction mySqlTransaction, UserInfoModel userInfoModel)
         {
-            //事务更新宝石数量和积分
-            String updateDiamondNumberStr = "UPDATE userinfo SET DiamondNumber=DiamondNumber-100 WHERE UserFlag=userFlag@;";
-            String lotteryDrawPointStr = "UPDATE lotterydraw SET POINTS= @pointsStr,LastLotteryDrawTime=NOW() WHERE UserFlag= @userFlag;";
+            //参数
+            MySqlParameter[] mySqlParameter = new MySqlParameter[]
+            {
+                new MySqlParameter("@userFlag",MySqlDbType.VarChar,32),
+                new MySqlParameter("@diamondNumber",MySqlDbType.VarChar,32)       
+            };
+            mySqlParameter[0].Value = userInfoModel.UserFlag;
+            mySqlParameter[1].Value = userInfoModel.DiamondNumber - 100;
 
-            MySqlHelper.ExecuteTranNonQuery(commandParameters, updateDiamondNumberStr, lotteryDrawPointStr);
+            //更新用户信息
+            String updateDiamondNumberStr = "UPDATE userinfo SET DiamondNumber=@diamondNumber WHERE UserFlag=@userFlag;";
+            return MySqlHelper.ExecuteNonQuery(mySqlTransaction, CommandType.Text, updateDiamondNumberStr, mySqlParameter);
         }
     }
 }
